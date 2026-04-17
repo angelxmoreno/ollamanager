@@ -26,6 +26,12 @@ const DEFAULT_TIMEOUT_MS = 30_000;
 
 const stripTrailingSlash = (value: string): string => value.replace(/\/+$/, '');
 
+interface TimeoutContext {
+  signal: AbortSignal;
+  reset: () => void;
+  clear: () => void;
+}
+
 export class OllamaClient {
   private readonly baseUrl: string;
 
@@ -42,66 +48,77 @@ export class OllamaClient {
   }
 
   async pullModel(modelName: string, onProgress?: (progress: OllamaPullProgress) => void): Promise<OllamaPullProgress[]> {
-    const response = await this.request(OLLAMA_API_ENDPOINTS.pull, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name: modelName, stream: true }),
-    });
+    const timeout = this.createTimeoutContext();
 
-    const events: OllamaPullProgress[] = [];
-    const reader = response.body?.getReader();
+    try {
+      const response = await this.fetchWithHandling(OLLAMA_API_ENDPOINTS.pull, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: modelName, stream: true }),
+      }, timeout.signal);
 
-    if (!reader) {
-      return events;
-    }
+      const events: OllamaPullProgress[] = [];
+      const reader = response.body?.getReader();
 
-    const decoder = new TextDecoder();
-    let buffer = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-
-      if (done) {
-        break;
+      if (!reader) {
+        return events;
       }
 
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() ?? '';
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed) {
-          continue;
+      while (true) {
+        timeout.reset();
+        const { done, value } = await reader.read();
+
+        if (done) {
+          break;
         }
 
-        let parsed: unknown;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed) {
+            continue;
+          }
+
+          let parsed: unknown;
+          try {
+            parsed = JSON.parse(trimmed);
+          } catch (error) {
+            throw new OllamaApiError(createParseError(error, trimmed, 'Failed to parse pull progress line'));
+          }
+
+          const progress = mapPullProgressChunk(parsed);
+          events.push(progress);
+          onProgress?.(progress);
+        }
+      }
+
+      buffer += decoder.decode();
+
+      if (buffer.trim()) {
         try {
-          parsed = JSON.parse(trimmed);
+          const parsed = JSON.parse(buffer.trim());
+          const progress = mapPullProgressChunk(parsed);
+          events.push(progress);
+          onProgress?.(progress);
         } catch (error) {
-          throw new OllamaApiError(createParseError(error, trimmed, 'Failed to parse pull progress line'));
+          throw new OllamaApiError(createParseError(error, buffer.trim(), 'Failed to parse trailing pull progress line'));
         }
-
-        const progress = mapPullProgressChunk(parsed);
-        events.push(progress);
-        onProgress?.(progress);
       }
-    }
 
-    if (buffer.trim()) {
-      try {
-        const parsed = JSON.parse(buffer.trim());
-        const progress = mapPullProgressChunk(parsed);
-        events.push(progress);
-        onProgress?.(progress);
-      } catch (error) {
-        throw new OllamaApiError(createParseError(error, buffer.trim(), 'Failed to parse trailing pull progress line'));
-      }
+      return events;
+    } catch (error) {
+      this.rethrowAsApiError(error);
+    } finally {
+      timeout.clear();
     }
-
-    return events;
   }
 
   async deleteModel(modelName: string): Promise<void> {
@@ -155,14 +172,10 @@ export class OllamaClient {
   }
 
   private async request(path: string, init?: RequestInit): Promise<Response> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort('timeout'), this.timeoutMs);
+    const timeout = this.createTimeoutContext();
 
     try {
-      const response = await fetch(this.buildUrl(path), {
-        ...init,
-        signal: controller.signal,
-      });
+      const response = await this.fetchWithHandling(path, init, timeout.signal);
 
       if (!response.ok) {
         const responseText = await response.text().catch(() => undefined);
@@ -171,18 +184,56 @@ export class OllamaClient {
 
       return response;
     } catch (error) {
-      if (error instanceof OllamaApiError) {
-        throw error;
-      }
-
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        throw new OllamaApiError(createTimeoutError(this.timeoutMs));
-      }
-
-      throw new OllamaApiError(createNetworkError(error));
+      this.rethrowAsApiError(error);
     } finally {
-      clearTimeout(timeoutId);
+      timeout.clear();
     }
+  }
+
+  private createTimeoutContext(): TimeoutContext {
+    const controller = new AbortController();
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    const reset = (): void => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
+      timeoutId = setTimeout(() => controller.abort(), this.timeoutMs);
+    };
+
+    const clear = (): void => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+
+    reset();
+
+    return {
+      signal: controller.signal,
+      reset,
+      clear,
+    };
+  }
+
+  private async fetchWithHandling(path: string, init: RequestInit | undefined, signal: AbortSignal): Promise<Response> {
+    return fetch(this.buildUrl(path), {
+      ...init,
+      signal,
+    });
+  }
+
+  private rethrowAsApiError(error: unknown): never {
+    if (error instanceof OllamaApiError) {
+      throw error;
+    }
+
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new OllamaApiError(createTimeoutError(this.timeoutMs));
+    }
+
+    throw new OllamaApiError(createNetworkError(error));
   }
 }
 

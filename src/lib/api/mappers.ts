@@ -101,15 +101,17 @@ export const mapModelDetailsResponse = (modelName: string, raw: unknown): Ollama
 
 export const mapHealthResponse = (raw: unknown): OllamaHealthStatus => {
   if (typeof raw === 'string') {
-    return { ok: true, version: raw };
+    const version = raw.trim();
+    return version ? { ok: true, version } : { ok: false };
   }
 
   const root = asRecord(raw);
   const version = asString(root?.version) ?? asString(root?.ollama_version);
+  const normalizedVersion = version?.trim();
 
   return {
-    ok: true,
-    version,
+    ok: Boolean(normalizedVersion),
+    version: normalizedVersion,
   };
 };
 
