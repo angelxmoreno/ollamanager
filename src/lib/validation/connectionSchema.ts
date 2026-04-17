@@ -1,7 +1,6 @@
 import type { ConnectionDraft } from "../../types/connections";
 
-const hostPattern =
-  /^(localhost|((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)*[A-Za-z0-9-]{1,63}|\d{1,3}(?:\.\d{1,3}){3})$/;
+const domainPattern = /^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)*[A-Za-z0-9-]{1,63}$/;
 
 export interface ConnectionValidationIssue {
   field: keyof ConnectionDraft;
@@ -22,6 +21,24 @@ export type ConnectionValidationResult = ConnectionValidationFailure | Connectio
 
 const normalizeString = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
 
+const isValidIPv4 = (value: string): boolean => {
+  const segments = value.split(".");
+  if (segments.length !== 4) {
+    return false;
+  }
+
+  return segments.every((segment) => {
+    if (!/^\d{1,3}$/.test(segment)) {
+      return false;
+    }
+
+    const parsed = Number(segment);
+    return parsed >= 0 && parsed <= 255;
+  });
+};
+
+const isValidHost = (value: string): boolean => value === "localhost" || domainPattern.test(value) || isValidIPv4(value);
+
 export const validateConnection = (input: Partial<ConnectionDraft>): ConnectionValidationResult => {
   const candidate: ConnectionDraft = {
     name: normalizeString(input.name),
@@ -38,7 +55,7 @@ export const validateConnection = (input: Partial<ConnectionDraft>): ConnectionV
     issues.push({ field: "name", message: "Name must be between 2 and 60 characters." });
   }
 
-  if (!hostPattern.test(candidate.host) || candidate.host.length > 255) {
+  if (!isValidHost(candidate.host) || candidate.host.length > 255) {
     issues.push({ field: "host", message: "Host must be localhost, a valid hostname, or IPv4 address." });
   }
 

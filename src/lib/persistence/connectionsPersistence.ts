@@ -31,8 +31,11 @@ class LocalStorageAdapter implements PersistAdapter {
     if (typeof window === "undefined") {
       return;
     }
-
-    window.localStorage.setItem(STORE_KEY, JSON.stringify(connections));
+    try {
+      window.localStorage.setItem(STORE_KEY, JSON.stringify(connections));
+    } catch {
+      // Ignore storage quota/private mode write failures to avoid crashing UI flows.
+    }
   }
 }
 
@@ -61,9 +64,13 @@ class TauriStoreAdapter implements PersistAdapter {
   }
 
   async save(connections: ConnectionRecord[]): Promise<void> {
-    const store = await this.getStore();
-    await store.set(STORE_KEY, connections);
-    await store.save();
+    try {
+      const store = await this.getStore();
+      await store.set(STORE_KEY, connections);
+      await store.save();
+    } catch {
+      // Ignore persistence failures so connection operations still succeed in-memory.
+    }
   }
 }
 

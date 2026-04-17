@@ -39,12 +39,18 @@ const state: ConnectionsState = {
 
 const listeners = new Set<Listener>();
 
+let snapshot: ConnectionsStore;
+
 const emit = () => {
   listeners.forEach((listener) => listener());
 };
 
 const setState = (partial: Partial<ConnectionsState>) => {
   Object.assign(state, partial);
+  snapshot = {
+    ...state,
+    ...actions,
+  };
   emit();
 };
 
@@ -175,15 +181,17 @@ const actions: ConnectionsActions = {
   },
 };
 
+snapshot = {
+  ...state,
+  ...actions,
+};
+
 const subscribe = (listener: Listener): (() => void) => {
   listeners.add(listener);
   return () => listeners.delete(listener);
 };
 
-const getSnapshot = (): ConnectionsStore => ({
-  ...getState(),
-  ...actions,
-});
+const getSnapshot = (): ConnectionsStore => snapshot;
 
 export const useConnectionsStore = (): ConnectionsStore =>
   useSyncExternalStore(subscribe, getSnapshot, getSnapshot);

@@ -123,11 +123,13 @@ button.danger {
 
 .dialog-card {
   width: min(500px, 100%);
+  max-height: calc(100vh - 2rem);
   background: white;
   padding: 1rem;
   border-radius: 0.75rem;
   display: grid;
   gap: 0.75rem;
+  overflow-y: auto;
 }
 
 .dialog-card label {
