@@ -1,3 +1,4 @@
+import { StrictMode } from 'react';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -51,5 +52,27 @@ describe('ModelsPanel', () => {
     render(<ModelsPanel baseUrl="http://localhost:11434" onActivity={onActivity} onToast={onToast} />);
 
     await screen.findByText(/Request failed/);
+  });
+
+  it('suppresses duplicate load errors during strict mode remounts', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+
+    render(
+      <StrictMode>
+        <ModelsPanel baseUrl="http://localhost:11434" onActivity={onActivity} onToast={onToast} />
+      </StrictMode>,
+    );
+
+    await screen.findByText(/Network error: Unable to reach Ollama API/);
+
+    await waitFor(() => {
+      expect(onToast).toHaveBeenCalledTimes(1);
+      expect(onToast).toHaveBeenCalledWith('error', 'Unable to reach Ollama API');
+      expect(onActivity).toHaveBeenCalledTimes(1);
+      expect(onActivity).toHaveBeenCalledWith({
+        level: 'error',
+        message: 'Failed loading models: Unable to reach Ollama API',
+      });
+    });
   });
 });
