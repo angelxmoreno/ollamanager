@@ -16,6 +16,7 @@ export interface OllamaModelDetails {
   license?: string;
   details?: Record<string, unknown>;
   modelInfo?: Record<string, unknown>;
+  rawPayload?: unknown;
 }
 
 export interface OllamaHealthStatus {
@@ -96,6 +97,7 @@ export const mapModelDetailsResponse = (modelName: string, raw: unknown): Ollama
     license: asString(root.license),
     details: asRecord(root.details) ?? undefined,
     modelInfo: asRecord(root.model_info) ?? asRecord(root.modelInfo) ?? undefined,
+    rawPayload: raw,
   };
 };
 
