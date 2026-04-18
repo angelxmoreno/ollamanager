@@ -22,7 +22,6 @@ describe('ModelsPanel', () => {
 
     render(<ModelsPanel baseUrl="http://localhost:11434" onActivity={onActivity} onToast={onToast} />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
     await screen.findByText('llama3:8b');
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
@@ -33,6 +32,7 @@ describe('ModelsPanel', () => {
 
   it('runs pull flow with fallback progress', async () => {
     vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ models: [] }), { status: 200 }))
       .mockResolvedValueOnce(new Response('', { status: 200 }))
       .mockResolvedValueOnce(new Response(JSON.stringify({ models: [] }), { status: 200 }))
     );
@@ -49,7 +49,6 @@ describe('ModelsPanel', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('down', { status: 500, statusText: 'Server Error' })));
 
     render(<ModelsPanel baseUrl="http://localhost:11434" onActivity={onActivity} onToast={onToast} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
 
     await screen.findByText(/Request failed/);
   });

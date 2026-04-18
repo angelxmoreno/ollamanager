@@ -6,6 +6,7 @@ describe('formatters', () => {
   it('formats bytes', () => {
     expect(formatBytes(1024)).toContain('KB');
     expect(formatBytes(undefined)).toBe('—');
+    expect(formatBytes(Number.POSITIVE_INFINITY)).toBe('—');
   });
 
   it('formats dates', () => {

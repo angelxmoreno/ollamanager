@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export type ToastKind = 'success' | 'error' | 'info';
 
@@ -15,17 +15,41 @@ export const ToastRegion = ({
   toasts: ToastMessage[];
   onDismiss: (id: string) => void;
 }) => {
-  useEffect(() => {
-    const timers = toasts.map((toast) =>
-      globalThis.setTimeout(() => {
-        onDismiss(toast.id);
-      }, 3200),
-    );
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
-    return () => {
-      timers.forEach((timer) => globalThis.clearTimeout(timer));
-    };
+  useEffect(() => {
+    const existingIds = new Set(toasts.map((toast) => toast.id));
+
+    toasts.forEach((toast) => {
+      if (timersRef.current.has(toast.id)) {
+        return;
+      }
+
+      const timer = globalThis.setTimeout(() => {
+        timersRef.current.delete(toast.id);
+        onDismiss(toast.id);
+      }, 3200);
+
+      timersRef.current.set(toast.id, timer);
+    });
+
+    for (const [toastId, timer] of timersRef.current.entries()) {
+      if (!existingIds.has(toastId)) {
+        globalThis.clearTimeout(timer);
+        timersRef.current.delete(toastId);
+      }
+    }
   }, [toasts, onDismiss]);
+
+  useEffect(
+    () => () => {
+      for (const timer of timersRef.current.values()) {
+        globalThis.clearTimeout(timer);
+      }
+      timersRef.current.clear();
+    },
+    [],
+  );
 
   return (
     <div className="toast-region" aria-live="polite" aria-label="Notifications">

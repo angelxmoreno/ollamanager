@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { OllamaClient } from '../../lib/api/ollamaClient';
 import { normalizeApiError } from '../../lib/api/normalize';
@@ -35,7 +35,7 @@ export const ModelsPanel = ({
 
   const client = useMemo(() => new OllamaClient({ baseUrl }), [baseUrl]);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -50,7 +50,11 @@ export const ModelsPanel = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [client, onActivity, onToast]);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
 
   const visibleModels = useMemo(() => {
     const q = search.trim().toLowerCase();
