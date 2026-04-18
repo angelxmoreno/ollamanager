@@ -39,7 +39,7 @@ export const ModelDetailsModal = ({
       <h4>Model info</h4>
       {renderRecord(details.modelInfo)}
 
-      {(!details.details || Object.keys(details.details).length === 0) && raw && (
+      {(!details.details || Object.keys(details.details).length === 0) && Boolean(raw) && (
         <>
           <h4>Raw payload</h4>
           <pre>{JSON.stringify(raw, null, 2)}</pre>
