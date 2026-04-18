@@ -195,3 +195,13 @@ const getSnapshot = (): ConnectionsStore => snapshot;
 
 export const useConnectionsStore = (): ConnectionsStore =>
   useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+
+export const __resetConnectionsStore = (): void => {
+  state.connections = [];
+  state.activeConnectionId = null;
+  state.isLoaded = false;
+  snapshot = {
+    ...state,
+    ...actions,
+  };
+};
