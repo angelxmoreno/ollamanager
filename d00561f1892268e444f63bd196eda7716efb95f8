@@ -1,0 +1,31 @@
+src-tauri/tauri.conf.json
+  e0e401a2d71bd605 7,9
+README.md
+  e0e401a2d71bd605 7-8,11,13-25,27,29-39
+GEMINI.md
+  e0e401a2d71bd605 35-36,39-41,44
+package.json
+  e0e401a2d71bd605 12
+AGENTS.md
+  e0e401a2d71bd605 33,40-41,43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "d00561f1892268e444f63bd196eda7716efb95f8",
+  "prompts": {
+    "e0e401a2d71bd605": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "05fc1cf1-df76-4495-8eca-2f92fbd8d127",
+        "model": "gemini-3-flash-preview"
+      },
+      "human_author": "Angel S. Moreno",
+      "messages": [],
+      "total_additions": 51,
+      "total_deletions": 31,
+      "accepted_lines": 42,
+      "overriden_lines": 0
+    }
+  }
+}
