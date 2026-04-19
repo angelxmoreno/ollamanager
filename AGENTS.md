@@ -13,13 +13,13 @@ This repository is a Tauri desktop app with a React + TypeScript frontend in `sr
 - `src-tauri/icons/`: required app icons for Tauri builds
 
 ## Commands
-- `npm install`: install JS dependencies
-- `npm run dev`: run the Vite frontend on port `1420`
-- `npm run dev:app`: run the Tauri desktop app in development
-- `npm run build`: TypeScript build plus Vite bundle
-- `npm run typecheck`: strict TypeScript checks
-- `npm test`: run the full Vitest suite
-- `npm test -- path/to/file.test.tsx`: run a focused test file
+- `bun install`: install JS dependencies
+- `bun run dev`: run the Vite frontend on port `1420`
+- `bun run dev:app`: run the Tauri desktop app in development
+- `bun run build`: TypeScript build plus Vite bundle
+- `bun run typecheck`: strict TypeScript checks
+- `bun run test`: run the full Vitest suite
+- `bun run test -- path/to/file.test.tsx`: run a focused test file
 
 ## Working Rules
 - Use TypeScript strict-mode friendly code. `tsconfig.app.json` enables `strict`, `noUnusedLocals`, and `noUnusedParameters`.
@@ -40,4 +40,3 @@ This repository is a Tauri desktop app with a React + TypeScript frontend in `sr
 - Run the narrowest relevant tests first, then `bun run test` if the change is broad enough.
 - If you touch startup or Tauri config, verify with `bun run dev:app`.
 - Summaries and commit messages should reflect only the files actually changed.
-ed.

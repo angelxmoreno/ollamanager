@@ -32,7 +32,7 @@ The project uses **TypeScript** for type safety and **Vitest** for unit and comp
 ## Building and Running
 
 ### Development
-- **Web only:** `bun run dev` (Runs on `http://localhost:5173`)
+- **Web only:** `bun run dev` (Runs on `http://localhost:1420`)
 - **Tauri App:** `bun run dev:app` (Launches the desktop window)
 
 ### Testing
