@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { OllamaClient } from '../../lib/api/ollamaClient';
 import { normalizeApiError } from '../../lib/api/normalize';
@@ -32,23 +32,45 @@ export const ModelsPanel = ({
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState<{ details: OllamaModelDetails; raw?: unknown } | null>(null);
+  const isMountedRef = useRef(false);
+  const refreshRequestIdRef = useRef(0);
 
   const client = useMemo(() => new OllamaClient({ baseUrl }), [baseUrl]);
 
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const refresh = useCallback(async () => {
+    const requestId = ++refreshRequestIdRef.current;
     setLoading(true);
     setError(null);
+
     try {
       const result = await client.listModels();
+      if (!isMountedRef.current || requestId !== refreshRequestIdRef.current) {
+        return;
+      }
+
       setModels(result);
       onActivity({ level: 'info', message: `Loaded ${result.length} model(s)` });
     } catch (err) {
+      if (!isMountedRef.current || requestId !== refreshRequestIdRef.current) {
+        return;
+      }
+
       const normalized = normalizeApiError(err);
       setError(`${normalized.title}: ${normalized.message}`);
       onToast('error', normalized.message);
       onActivity({ level: 'error', message: `Failed loading models: ${normalized.message}` });
     } finally {
-      setLoading(false);
+      if (isMountedRef.current && requestId === refreshRequestIdRef.current) {
+        setLoading(false);
+      }
     }
   }, [client, onActivity, onToast]);
 
