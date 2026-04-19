@@ -1,0 +1,23 @@
+AGENTS.md
+  a7f208a3fb2ce801 1,3-4,6-13,15-22,24-29,31-33,35-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "edf621e0f88405a6aee09ddddbd46008971d3786",
+  "prompts": {
+    "a7f208a3fb2ce801": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019da1fa-6e3a-73a3-8108-fb2e3d85a7d3",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Angel S. Moreno",
+      "messages": [],
+      "total_additions": 36,
+      "total_deletions": 18,
+      "accepted_lines": 36,
+      "overriden_lines": 0
+    }
+  }
+}
