@@ -4,21 +4,39 @@ A React + Vite UI for managing Ollama connections, browsing local models, pullin
 
 ## Setup
 
-```bash
-npm install
+```
+bun install
 ```
 
-## Run
+## Quick Start (Development)
 
-```bash
-npm run dev
-```
+1. **Install Bun:** If you haven't already, [install Bun](https://bun.sh).
+2. **Install dependencies:**
+   ```
+   bun install
+   ```
+3. **Run the development server (Web):**
+   ```
+   bun run dev
+   ```
+4. **Run the desktop app (Tauri):**
+   ```
+   bun run dev:app
+   ```
 
-## Test
+## Scripts
 
-```bash
-npm test
-```
+The following scripts are available in `package.json`:
+
+- `bun run dev`: Starts the Vite development server for the web frontend.
+- `bun run dev:app`: Launches the Tauri development window (automatically runs `dev` first).
+- `bun run build`: Runs TypeScript type checking and builds the production frontend bundle.
+- `bun run preview`: Locally previews the production build.
+- `bun run test`: Runs the Vitest suite once.
+- `bun run test:watch`: Runs Vitest in interactive watch mode.
+- `bun run test:ui`: Opens the Vitest UI in your browser for visual test debugging.
+- `bun run typecheck`: Runs `tsc` to verify type safety without emitting files.
+- `bun run tauri`: Access the Tauri CLI directly (e.g., `bun run tauri build`).
 
 ## Endpoint assumptions
 

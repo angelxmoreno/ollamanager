@@ -30,13 +30,14 @@ This repository is a Tauri desktop app with a React + TypeScript frontend in `sr
 
 ## Tauri Notes
 - Tauri dev requires `src-tauri/icons/icon.png`. If it is missing or invalid, `tauri::generate_context!()` will fail during compile.
-- `src-tauri/tauri.conf.json` uses `beforeDevCommand: npm run dev`, so stale Vite processes can block `npm run dev:app` by holding port `1420`.
+- `src-tauri/tauri.conf.json` uses `beforeDevCommand: bun run dev`, so stale Vite processes can block `bun run dev:app` by holding port `1420`.
 
 ## Frontend Notes
 - `src/main.tsx` uses `React.StrictMode`. Development-only remounts can duplicate effects; guard async UI side effects accordingly.
 - The app expects an Ollama server at the configured connection URL. `127.0.0.1:11434` will fail with network errors if Ollama is not running.
 
 ## Before Finishing
-- Run the narrowest relevant tests first, then `npm test` if the change is broad enough.
-- If you touch startup or Tauri config, verify with `npm run dev:app`.
+- Run the narrowest relevant tests first, then `bun run test` if the change is broad enough.
+- If you touch startup or Tauri config, verify with `bun run dev:app`.
 - Summaries and commit messages should reflect only the files actually changed.
+ed.

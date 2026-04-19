@@ -32,16 +32,16 @@ The project uses **TypeScript** for type safety and **Vitest** for unit and comp
 ## Building and Running
 
 ### Development
-- **Web only:** `npm run dev` (Runs on `http://localhost:5173`)
-- **Tauri App:** `npm run dev:app` (Launches the desktop window)
+- **Web only:** `bun run dev` (Runs on `http://localhost:5173`)
+- **Tauri App:** `bun run dev:app` (Launches the desktop window)
 
 ### Testing
-- **Run tests:** `npm test`
-- **UI mode:** `npm run test:ui`
-- **Type checking:** `npm run typecheck`
+- **Run tests:** `bun run test`
+- **UI mode:** `bun run test:ui`
+- **Type checking:** `bun run typecheck`
 
 ### Production Build
-- **Build app:** `npm run build`
+- **Build app:** `bun run build`
 
 ## Development Conventions
 
