@@ -1,0 +1,42 @@
+project-files/ux-plan.md
+  a7f208a3fb2ce801 1-165
+GEMINI.md
+  e0e401a2d71bd605 66-78
+project-files/ollama-capability-matrix.md
+  a7f208a3fb2ce801 1-173
+AGENTS.md
+  a7f208a3fb2ce801 6-9,35-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "958bb6a5fad0b80eeb247d77b3bcf3c568576537",
+  "prompts": {
+    "a7f208a3fb2ce801": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019da1fa-6e3a-73a3-8108-fb2e3d85a7d3",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Angel S. Moreno",
+      "messages": [],
+      "total_additions": 1538,
+      "total_deletions": 290,
+      "accepted_lines": 354,
+      "overriden_lines": 0
+    },
+    "e0e401a2d71bd605": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "05fc1cf1-df76-4495-8eca-2f92fbd8d127",
+        "model": "gemini-3-flash-preview"
+      },
+      "human_author": "Angel S. Moreno",
+      "messages": [],
+      "total_additions": 378,
+      "total_deletions": 325,
+      "accepted_lines": 13,
+      "overriden_lines": 0
+    }
+  }
+}
