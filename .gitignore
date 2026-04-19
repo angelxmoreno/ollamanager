@@ -6,3 +6,6 @@ src-tauri/target/
 src-tauri/gen/
 *.log
 *.tsbuildinfo
+
+!AGENTS.md
+!GEMINI.md

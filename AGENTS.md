@@ -1,24 +1,42 @@
-# Repository Guidelines
+# AGENTS.md
 
-## Project Structure & Module Organization
-`src/` contains the React + TypeScript frontend. Keep UI in `src/components/` and feature-specific screens in `src/features/activity`, `src/features/connections`, and `src/features/models`. Shared client logic lives under `src/lib/` (`api/`, `persistence/`, `validation/`, `format/`), app state is in `src/store/`, and shared types are in `src/types/`. Tests are mostly colocated as `*.test.ts` or `*.test.tsx`, with shared test setup in `src/test/setup.ts`. The Tauri shell and native packaging files live in `src-tauri/`, with Rust entry points under `src-tauri/src/`.
+## Purpose
+This repository is a Tauri desktop app with a React + TypeScript frontend in `src/` and the Rust/Tauri shell in `src-tauri/`. Use this file as the working contract for coding agents making changes here.
 
-## Build, Test, and Development Commands
-Use `npm install` once to install frontend and Tauri CLI dependencies.
+## Repo Map
+- `src/features/`: feature UI for connections, models, and activity
+- `src/components/`: shared presentational components
+- `src/lib/`: API client, normalization, formatting, persistence, validation
+- `src/store/`: app state hooks and store logic
+- `src/test/`: shared Vitest setup
+- `src-tauri/src/`: Rust entry points
+- `src-tauri/icons/`: required app icons for Tauri builds
 
-- `npm run dev` starts the Vite frontend on port `1420`.
-- `npm run build` runs `tsc -b` and produces the frontend bundle.
-- `npm run typecheck` runs strict TypeScript checks without emitting files.
-- `npm test` runs the Vitest suite once.
-- `npm test -- src/lib/api/normalize.test.ts` runs a single test file.
-- `npm run test:ui` opens the Vitest UI.
-- `npm run tauri dev` launches the desktop app with the Rust wrapper.
+## Commands
+- `npm install`: install JS dependencies
+- `npm run dev`: run the Vite frontend on port `1420`
+- `npm run dev:app`: run the Tauri desktop app in development
+- `npm run build`: TypeScript build plus Vite bundle
+- `npm run typecheck`: strict TypeScript checks
+- `npm test`: run the full Vitest suite
+- `npm test -- path/to/file.test.tsx`: run a focused test file
 
-## Coding Style & Naming Conventions
-Follow the existing TypeScript style: functional React components, PascalCase component files (`ModelsPanel.tsx`), camelCase utility modules (`connectionsPersistence.ts`), and `use...` naming for store hooks (`useConnectionsStore.ts`). Frontend files use TypeScript `strict` mode with `noUnusedLocals`, `noUnusedParameters`, and `noFallthroughCasesInSwitch` enabled. Match the current formatting in the surrounding file: TypeScript code is primarily 2-space indented, and Rust code in `src-tauri/` uses standard 4-space indentation. No standalone ESLint or Prettier config is checked in.
+## Working Rules
+- Use TypeScript strict-mode friendly code. `tsconfig.app.json` enables `strict`, `noUnusedLocals`, and `noUnusedParameters`.
+- Match local file style instead of inventing new formatting. TS files here use 2-space indentation; Rust uses 4 spaces.
+- Keep tests colocated as `*.test.ts` or `*.test.tsx`.
+- Prefer small, focused patches. Do not rewrite unrelated files.
+- Do not commit generated `src-tauri/gen/` output.
 
-## Testing Guidelines
-Vitest runs in `jsdom` with Testing Library and `@testing-library/jest-dom` loaded from `src/test/setup.ts`. Prefer colocated tests named `*.test.ts` or `*.test.tsx`. Cover UI behavior, validation, persistence, and API normalization when changing those paths. Run `npm test` before opening a PR; use the single-file form above while iterating.
+## Tauri Notes
+- Tauri dev requires `src-tauri/icons/icon.png`. If it is missing or invalid, `tauri::generate_context!()` will fail during compile.
+- `src-tauri/tauri.conf.json` uses `beforeDevCommand: npm run dev`, so stale Vite processes can block `npm run dev:app` by holding port `1420`.
 
-## Commit & Pull Request Guidelines
-Recent history uses short, imperative commit subjects such as `Add typed Ollama API client utilities`, `Fix health mapping...`, and `Stabilize build config...`. Keep commits focused and descriptive. Merge commits from PRs are preserved in history, so keep branch work clean enough to review as a standalone series.
+## Frontend Notes
+- `src/main.tsx` uses `React.StrictMode`. Development-only remounts can duplicate effects; guard async UI side effects accordingly.
+- The app expects an Ollama server at the configured connection URL. `127.0.0.1:11434` will fail with network errors if Ollama is not running.
+
+## Before Finishing
+- Run the narrowest relevant tests first, then `npm test` if the change is broad enough.
+- If you touch startup or Tauri config, verify with `npm run dev:app`.
+- Summaries and commit messages should reflect only the files actually changed.
