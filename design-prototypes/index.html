@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OllaManager Design Prototypes</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 30%),
+          linear-gradient(180deg, #0f172a, #111827 50%, #020617);
+      }
+
+      main {
+        width: min(920px, calc(100vw - 48px));
+        margin: 0 auto;
+        padding: 32px 0 48px;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: 2rem;
+        line-height: 1.1;
+      }
+
+      p {
+        margin: 0;
+        color: #94a3b8;
+        line-height: 1.5;
+      }
+
+      .hero {
+        padding: 24px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        background: rgba(15, 23, 42, 0.78);
+        backdrop-filter: blur(8px);
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      .card {
+        padding: 18px 20px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(15, 23, 42, 0.7);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+      }
+
+      .meta {
+        margin-top: 10px;
+        color: #cbd5e1;
+        font-size: 0.92rem;
+      }
+
+      a {
+        color: #7dd3fc;
+        text-decoration: none;
+      }
+
+      a:hover { text-decoration: underline; }
+
+      ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+        color: #cbd5e1;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <h1>OllaManager Design Prototypes</h1>
+        <p>
+          Start with the `08` candidate. It is intended to be a direct revision of `05`, not a new
+          design direction. The earlier files remain available for comparison only.
+        </p>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2><a href="./08-workspace-from-05.html">00. Workspace from 05</a></h2>
+          <p>Main review target. This is the candidate intended to stay visually anchored to `05`.</p>
+          <div class="meta">Use this for: shell/layout review, table columns, actions, settings placement, and pull-model workflow.</div>
+        </article>
+
+        <article class="card">
+          <h2><a href="./07-workspace-revised-v2.html">01. Workspace Revised v2</a></h2>
+          <p>Previous revision attempt. Kept only for comparison, not as the preferred target.</p>
+          <div class="meta">You can ignore this unless you want to compare how it drifted.</div>
+        </article>
+
+        <article class="card">
+          <h2><a href="./05-workspace-revised.html">02. Revised Stitch Candidate</a></h2>
+          <p>Earlier corrected Stitch pass. Kept as the baseline it was revised from.</p>
+          <div class="meta">Use this for: comparing `07` against the version you originally reviewed.</div>
+        </article>
+
+        <article class="card">
+          <h2><a href="./06-workspace-reviewed.html">03. Manual Review Prototype</a></h2>
+          <p>Manual reinterpretation that diverged too far. Kept only as a record, not the target.</p>
+          <div class="meta">You can ignore this unless you want to compare what was rejected.</div>
+        </article>
+
+        <article class="card">
+          <h2><a href="./01-workspace-main-dark.html">04. Earlier Main Workspace</a></h2>
+          <p>Earlier shell direction. Useful only as background comparison.</p>
+          <div class="meta">Kept for reference, but it contains more invented content than the revised candidate.</div>
+        </article>
+
+        <article class="card">
+          <h2><a href="./02-disconnected-light.html">05. Disconnected Workspace (Light)</a></h2>
+          <p>Preserved shell with an inline no-connection state and calmer visual tone.</p>
+          <div class="meta">Use this for: empty/disconnected-state behavior and tone restraint.</div>
+        </article>
+
+        <article class="card">
+          <h2><a href="./03-disconnected-dark.html">06. Disconnected Workspace (Dark)</a></h2>
+          <p>Darker variant of the disconnected state with a more tactical console aesthetic.</p>
+          <div class="meta">Use this for: contrast and status treatment comparison.</div>
+        </article>
+
+        <article class="card">
+          <h2><a href="./04-operations-dark.html">07. Active Operations</a></h2>
+          <p>Workspace emphasizing active pull progress and recent app-initiated operations.</p>
+          <div class="meta">Use this for: deciding how pull progress and recent actions should live in the shell.</div>
+        </article>
+      </section>
+
+      <section class="card" style="margin-top: 24px;">
+        <h2>What To Critique</h2>
+        <ul>
+          <li>Does the reviewed interactive prototype feel like the right redesign target?</li>
+          <li>Should the inspector stay on the right, get narrower, or become a bottom panel?</li>
+          <li>Should operations live bottom-right, full right rail, or bottom strip?</li>
+          <li>Does the pull model flow belong inline in the toolbar/workspace?</li>
+          <li>Which parts still feel too dashboard-like or not grounded enough in the real product?</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
