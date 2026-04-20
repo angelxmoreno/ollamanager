@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#d4e4fa",
+                      "tertiary-fixed": "#f8a010",
+                      "on-tertiary-fixed": "#2a1700",
+                      "primary": "#7bd0ff",
+                      "on-surface-variant": "#91aaeb",
+                      "on-error-container": "#ff9993",
+                      "surface-container-highest": "#00225a",
+                      "error-container": "#7f2927",
+                      "on-secondary-fixed-variant": "#4e5d6f",
+                      "inverse-surface": "#faf8ff",
+                      "primary-container": "#004c69",
+                      "on-primary-fixed": "#00445e",
+                      "secondary-fixed-dim": "#c6d6ec",
+                      "primary-dim": "#47c4ff",
+                      "tertiary-fixed-dim": "#e79400",
+                      "on-secondary-container": "#b1c0d6",
+                      "secondary-dim": "#909fb4",
+                      "on-surface": "#dee5ff",
+                      "on-secondary-fixed": "#324052",
+                      "background": "#060e20",
+                      "tertiary-dim": "#e79400",
+                      "outline": "#5b74b1",
+                      "on-secondary": "#122131",
+                      "surface-dim": "#060e20",
+                      "surface-bright": "#002867",
+                      "on-background": "#dee5ff",
+                      "surface-container-lowest": "#000000",
+                      "tertiary-container": "#f8a010",
+                      "surface": "#060e20",
+                      "surface-tint": "#7bd0ff",
+                      "outline-variant": "#2b4680",
+                      "secondary-container": "#2e3c4e",
+                      "primary-fixed-dim": "#a2dcff",
+                      "primary-fixed": "#c4e7ff",
+                      "on-tertiary-fixed-variant": "#563400",
+                      "on-primary-container": "#97d8ff",
+                      "surface-container-low": "#06122d",
+                      "inverse-on-surface": "#4d556b",
+                      "on-error": "#490106",
+                      "surface-container-high": "#031d4b",
+                      "error-dim": "#bb5551",
+                      "inverse-primary": "#00668b",
+                      "on-primary": "#004560",
+                      "error": "#ee7d77",
+                      "tertiary": "#ffb148",
+                      "on-tertiary": "#573500",
+                      "secondary": "#909fb4",
+                      "on-primary-fixed-variant": "#006286",
+                      "on-tertiary-container": "#4a2c00",
+                      "surface-variant": "#00225a",
+                      "surface-container": "#05183c"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "fontFamily": {
+                      "headline": ["Inter"],
+                      "body": ["Inter"],
+                      "label": ["Inter"],
+                      "mono": ["JetBrains Mono"]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 16px;
+        }
+        body {
+            background-color: #060e20;
+            color: #dee5ff;
+            font-family: 'Inter', sans-serif;
+        }
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="bg-background overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-[#060e20] dark:bg-[#060e20] flex justify-between items-center w-full px-6 sticky top-0 z-50 h-12 bg-slate-900 shadow-[inset_0_-1px_0_0_rgba(255,255,255,0.05)]">
+<div class="flex items-center gap-8">
+<div class="font-mono font-black text-[#38BDF8] tracking-tighter text-lg">OLLAMA_MNGR_V1.0</div>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="font-['Inter'] text-xs font-medium tracking-tight uppercase text-slate-500 hover:text-slate-300 transition-all duration-150" href="#">Models</a>
+<a class="font-['Inter'] text-xs font-medium tracking-tight uppercase text-slate-500 hover:text-slate-300 transition-all duration-150" href="#">Logs</a>
+<a class="font-['Inter'] text-xs font-medium tracking-tight uppercase text-[#38BDF8] border-b border-[#38BDF8] pb-1" href="#">Terminal</a>
+<a class="font-['Inter'] text-xs font-medium tracking-tight uppercase text-slate-500 hover:text-slate-300 transition-all duration-150" href="#">Config</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary-container text-on-primary-container px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider hover:opacity-80 active:scale-95 transition-all">
+                Connect Server
+            </button>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-slate-500 hover:text-slate-300 cursor-pointer transition-all duration-150" data-icon="settings">settings</span>
+<span class="material-symbols-outlined text-slate-500 hover:text-slate-300 cursor-pointer transition-all duration-150" data-icon="sync">sync</span>
+<span class="material-symbols-outlined text-slate-500 hover:text-slate-300 cursor-pointer transition-all duration-150" data-icon="power_settings_new">power_settings_new</span>
+</div>
+</div>
+</header>
+<main class="flex-1 flex overflow-hidden">
+<!-- SideNavBar (Left Pane) -->
+<aside class="w-64 bg-slate-900/50 backdrop-blur-md flex flex-col h-full border-r border-white/5 shrink-0">
+<div class="p-4 border-b border-white/5">
+<div class="text-slate-100 font-bold font-mono text-[10px] tracking-widest uppercase">CONNECTIONS</div>
+<div class="text-[#38BDF8] font-mono text-[9px] mt-1">ACTIVE_NODES: 00</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-2">
+<div class="text-slate-500 px-4 py-3 hover:bg-slate-800/40 mb-1 flex items-center justify-between group transition-all duration-200 cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" data-icon="lan">lan</span>
+<span class="font-mono text-[10px] tracking-widest uppercase">Localhost</span>
+</div>
+<span class="text-[8px] bg-error/10 text-error px-1.5 py-0.5 rounded border border-error/20">OFFLINE</span>
+</div>
+<div class="text-slate-500 px-4 py-3 hover:bg-slate-800/40 mb-1 flex items-center justify-between group transition-all duration-200 cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" data-icon="dns">dns</span>
+<span class="font-mono text-[10px] tracking-widest uppercase">Remote_GPU_01</span>
+</div>
+<span class="text-[8px] bg-error/10 text-error px-1.5 py-0.5 rounded border border-error/20">TIMEOUT</span>
+</div>
+<div class="text-slate-500 px-4 py-3 hover:bg-slate-800/40 mb-1 flex items-center justify-between group transition-all duration-200 cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" data-icon="hub">hub</span>
+<span class="font-mono text-[10px] tracking-widest uppercase">Edge_Node_Alpha</span>
+</div>
+<span class="text-[8px] bg-error/10 text-error px-1.5 py-0.5 rounded border border-error/20">OFFLINE</span>
+</div>
+<div class="text-slate-500 px-4 py-3 hover:bg-slate-800/40 mb-1 flex items-center justify-between group transition-all duration-200 cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" data-icon="storage">storage</span>
+<span class="font-mono text-[10px] tracking-widest uppercase">Cluster_Prod</span>
+</div>
+<span class="text-[8px] bg-error/10 text-error px-1.5 py-0.5 rounded border border-error/20">DENIED</span>
+</div>
+<div class="text-slate-500 px-4 py-3 hover:bg-slate-800/40 mb-1 flex items-center gap-3 group transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-mono text-[10px] tracking-widest uppercase">Add_Connection</span>
+</div>
+</nav>
+<div class="p-4 border-t border-white/5 space-y-2">
+<div class="flex items-center gap-3 text-slate-500 hover:text-slate-200 cursor-pointer transition-colors px-2 py-1">
+<span class="material-symbols-outlined text-sm" data-icon="help_outline">help_outline</span>
+<span class="font-mono text-[10px] tracking-widest uppercase">Documentation</span>
+</div>
+<div class="flex items-center gap-3 text-slate-500 hover:text-slate-200 cursor-pointer transition-colors px-2 py-1">
+<span class="material-symbols-outlined text-sm" data-icon="list_alt">list_alt</span>
+<span class="font-mono text-[10px] tracking-widest uppercase">System_Log</span>
+</div>
+</div>
+</aside>
+<!-- Center Workspace (Main Content) -->
+<section class="flex-1 flex flex-col bg-surface-container-low overflow-hidden relative">
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD93AsNppVX5OtWURXOb182PdAOg5aGrabobepc-sejU4bjKQnn_fGNIQZ5CdT-oWxjwq-FVl62FrT6V8_0AS3D72RKsZK-vjeK9nS58XdmoIGX-mGcdr9AjLICVn4LPG5CyUK-dCHs65RJwlEuijcoSZHJ59fJpungc9xtieXYipuuXjWFT3eXwvzj0HqYiX5IMcRglfmrwBg6MGncXNQ1yvaW89Jn9_LLIrQpLc8TRBcq5fB1XKrK0wxl-FDgcDOvgtGok-tw9D8');"></div>
+<!-- Terminal Workspace Empty State -->
+<div class="flex-1 flex flex-col items-center justify-center p-12 relative z-10">
+<div class="w-full max-w-2xl bg-surface-container border border-outline-variant/20 rounded shadow-2xl overflow-hidden backdrop-blur-xl">
+<div class="h-8 bg-surface-container-highest flex items-center px-4 justify-between border-b border-outline-variant/30">
+<div class="flex gap-2">
+<div class="w-2.5 h-2.5 rounded-full bg-error-dim"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-tertiary-dim"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-primary-dim"></div>
+</div>
+<div class="font-mono text-[9px] text-on-surface-variant tracking-widest">SYSTEM_DIAGNOSTIC_V2</div>
+</div>
+<div class="p-8 flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-error-container/20 rounded-full flex items-center justify-center mb-6 border border-error/30">
+<span class="material-symbols-outlined text-error text-3xl" style="font-variation-settings: 'FILL' 1;">power_off</span>
+</div>
+<h2 class="text-primary font-mono text-xl font-bold tracking-tighter mb-2">SERVER_UNREACHABLE</h2>
+<p class="text-on-surface-variant font-mono text-xs max-w-sm mb-8 leading-relaxed">
+                            No active Ollama nodes detected on the current network. Initialize connection to start model orchestration.
+                        </p>
+<div class="grid grid-cols-2 gap-4 w-full">
+<div class="bg-surface-container-low p-4 rounded border border-outline-variant/10 text-left hover:border-primary/40 cursor-pointer transition-all group">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="cable">cable</span>
+<span class="font-mono text-[11px] font-bold text-on-surface">RECONNECT_ALL</span>
+</div>
+<p class="text-[9px] text-on-surface-variant leading-tight">Broadcast ping to all saved node configurations.</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded border border-outline-variant/10 text-left hover:border-tertiary/40 cursor-pointer transition-all group">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-tertiary group-hover:scale-110 transition-transform" data-icon="terminal">terminal</span>
+<span class="font-mono text-[11px] font-bold text-on-surface">INIT_LOCAL</span>
+</div>
+<p class="text-[9px] text-on-surface-variant leading-tight">Force start ollama.service on localhost:11434.</p>
+</div>
+</div>
+<div class="mt-8 w-full bg-black/40 p-4 rounded border border-white/5 text-left">
+<div class="flex items-center gap-2 mb-3">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span class="font-mono text-[10px] text-error uppercase tracking-widest">Live Logs</span>
+</div>
+<div class="mono-text text-[10px] space-y-1 overflow-hidden">
+<div class="text-slate-500">[14:22:01] <span class="text-on-surface-variant">INF</span> Starting sequence initialization...</div>
+<div class="text-slate-500">[14:22:02] <span class="text-error">ERR</span> Connection refused at 127.0.0.1:11434</div>
+<div class="text-slate-500">[14:22:02] <span class="text-on-surface-variant">INF</span> Retrying heartbeat in 5000ms...</div>
+<div class="text-slate-500">[14:22:03] <span class="text-slate-600">...</span></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-high px-8 py-4 flex justify-between items-center">
+<button class="text-on-surface-variant font-mono text-[10px] uppercase tracking-widest hover:text-on-surface transition-colors">Settings</button>
+<button class="bg-primary text-on-primary font-mono text-[10px] font-bold px-6 py-2 uppercase tracking-widest rounded-sm hover:brightness-110 transition-all">Test Connection</button>
+</div>
+</div>
+<!-- Subtle data grid overlay for atmosphere -->
+<div class="mt-12 grid grid-cols-4 gap-6 w-full max-w-4xl opacity-40">
+<div class="border-l border-white/5 pl-3">
+<div class="text-slate-500 font-mono text-[8px] uppercase">Node Count</div>
+<div class="text-on-surface font-mono text-sm">00</div>
+</div>
+<div class="border-l border-white/5 pl-3">
+<div class="text-slate-500 font-mono text-[8px] uppercase">Latency</div>
+<div class="text-error font-mono text-sm">N/A</div>
+</div>
+<div class="border-l border-white/5 pl-3">
+<div class="text-slate-500 font-mono text-[8px] uppercase">Uptime</div>
+<div class="text-on-surface font-mono text-sm">0s</div>
+</div>
+<div class="border-l border-white/5 pl-3">
+<div class="text-slate-500 font-mono text-[8px] uppercase">Memory</div>
+<div class="text-on-surface font-mono text-sm">0.0GB</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Inspector (Collapsed Pane) -->
+<aside class="w-12 bg-slate-950/50 border-l border-white/5 flex flex-col items-center py-4 gap-6">
+<button class="text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="info">info</span>
+</button>
+<button class="text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="monitoring">monitoring</span>
+</button>
+<button class="text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="layers">layers</span>
+</button>
+<div class="flex-1"></div>
+<button class="text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="keyboard_arrow_left">keyboard_arrow_left</span>
+</button>
+</aside>
+</main>
+<!-- Global Status Footer -->
+<footer class="h-6 bg-surface-container-lowest border-t border-white/5 px-4 flex items-center justify-between text-[9px] font-mono tracking-widest uppercase">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+<span class="text-error">DISCONNECTED</span>
+</div>
+<div class="text-slate-600">ID: OLLAMA-MNGR-ALPHA-01</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-slate-600">CPU: --%</div>
+<div class="text-slate-600">VRAM: --%</div>
+<div class="text-slate-500">UTF-8</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[10px]" data-icon="dns">dns</span>
+<span>Ready</span>
+</div>
+</div>
+</footer>
+</body></html>

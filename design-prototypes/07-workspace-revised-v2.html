@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OllaManager Workspace Revised v2</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f9fb;
+        --surface: #ffffff;
+        --surface-soft: #f0f4f7;
+        --surface-mid: #e8eff3;
+        --surface-strong: #d9e4ea;
+        --text: #2a3439;
+        --muted: #566166;
+        --outline: #a9b4b9;
+        --primary: #565e74;
+        --primary-dim: #4a5268;
+        --primary-soft: #dae2fd;
+        --tertiary: #006499;
+        --tertiary-soft: #dceeff;
+        --error: #9f403d;
+        --error-soft: #fff2f1;
+        --success-soft: #e7f7f5;
+        --shadow: 0 8px 24px rgba(42, 52, 57, 0.06);
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #fafcfd 0%, var(--bg) 100%);
+        color: var(--text);
+      }
+
+      button, input, select {
+        font: inherit;
+      }
+
+      .app {
+        height: 100vh;
+        display: grid;
+        grid-template-rows: 56px 1fr;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        border-bottom: 1px solid rgba(169, 180, 185, 0.4);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .brand-mark {
+        width: 16px;
+        height: 16px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dim));
+      }
+
+      .main-nav {
+        display: flex;
+        gap: 10px;
+        margin-left: 28px;
+      }
+
+      .main-nav a, .gear-button {
+        text-decoration: none;
+        color: var(--muted);
+        padding: 8px 12px;
+        background: transparent;
+        border: 1px solid transparent;
+        cursor: pointer;
+      }
+
+      .main-nav a.active {
+        color: var(--text);
+        border-color: rgba(169, 180, 185, 0.45);
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      .topbar-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .top-search {
+        width: 250px;
+        border: 1px solid rgba(169, 180, 185, 0.45);
+        background: var(--surface-soft);
+        padding: 9px 12px;
+      }
+
+      .gear-button {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: grid;
+        place-items: center;
+        border-color: rgba(169, 180, 185, 0.45);
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      .shell {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 272px minmax(0, 1fr) 360px;
+        gap: 10px;
+        padding: 10px;
+      }
+
+      .sidebar, .workspace, .inspector {
+        min-height: 0;
+        box-shadow: var(--shadow);
+      }
+
+      .sidebar {
+        background: var(--surface-soft);
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      .section-head {
+        padding: 16px 16px 12px;
+        border-bottom: 1px solid rgba(169, 180, 185, 0.35);
+      }
+
+      .eyebrow {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .subtle {
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .sidebar-list {
+        overflow: auto;
+        padding: 12px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .connection {
+        position: relative;
+        padding: 12px;
+        border: 1px solid transparent;
+        background: rgba(255, 255, 255, 0.72);
+        display: grid;
+        gap: 6px;
+      }
+
+      .connection.active {
+        background: var(--surface);
+        border-color: rgba(169, 180, 185, 0.42);
+      }
+
+      .connection::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 18%;
+        width: 4px;
+        height: 64%;
+        background: #c8d2d8;
+      }
+
+      .connection.connected::before { background: var(--tertiary); }
+      .connection.unreachable::before { background: var(--error); }
+      .connection.loading::before { background: #64748b; }
+
+      .connection-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .connection-name {
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      }
+
+      .status-pill {
+        font-size: 0.67rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+      }
+
+      .connection-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .tool-btn {
+        border: 1px solid rgba(169, 180, 185, 0.45);
+        background: var(--surface);
+        color: var(--text);
+        padding: 6px 8px;
+        cursor: pointer;
+      }
+
+      .tool-btn.primary {
+        background: linear-gradient(180deg, var(--primary), var(--primary-dim));
+        color: white;
+        border-color: var(--primary-dim);
+      }
+
+      .tool-btn.danger {
+        color: var(--error);
+      }
+
+      .sidebar-footer {
+        padding: 12px 16px 16px;
+        border-top: 1px solid rgba(169, 180, 185, 0.35);
+      }
+
+      .workspace {
+        background: var(--surface);
+        display: grid;
+        grid-template-rows: auto auto 1fr auto;
+      }
+
+      .workspace-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 16px;
+        padding: 20px 20px 14px;
+      }
+
+      .workspace-title h1 {
+        margin: 0;
+        font-size: 1.7rem;
+        letter-spacing: -0.03em;
+      }
+
+      .workspace-title p {
+        margin: 4px 0 0;
+        color: var(--muted);
+      }
+
+      .toolbar {
+        padding: 0 20px 12px;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid rgba(169, 180, 185, 0.35);
+      }
+
+      .toolbar-left, .toolbar-right {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .field {
+        display: grid;
+        gap: 5px;
+      }
+
+      .field label {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .field input, .field select {
+        border: 1px solid rgba(169, 180, 185, 0.45);
+        background: var(--surface-soft);
+        padding: 8px 10px;
+      }
+
+      .toolbar-search {
+        width: 220px;
+      }
+
+      .pull-composer {
+        display: none;
+        grid-template-columns: minmax(220px, 1fr) 220px auto auto;
+        gap: 10px;
+        align-items: end;
+        padding: 14px 20px;
+        background: var(--surface-soft);
+        border-bottom: 1px solid rgba(169, 180, 185, 0.35);
+      }
+
+      .pull-composer.open {
+        display: grid;
+      }
+
+      .table-wrap {
+        min-height: 0;
+        overflow: auto;
+        padding: 0 20px 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead th {
+        position: sticky;
+        top: 0;
+        background: var(--surface-soft);
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        text-align: left;
+        padding: 12px 10px;
+        border-bottom: 1px solid rgba(169, 180, 185, 0.4);
+      }
+
+      tbody td {
+        padding: 13px 10px;
+        border-bottom: 1px solid rgba(169, 180, 185, 0.25);
+        vertical-align: top;
+        font-size: 0.86rem;
+      }
+
+      tbody tr.selected {
+        background: rgba(218, 226, 253, 0.28);
+      }
+
+      tbody tr:hover {
+        background: rgba(240, 244, 247, 0.7);
+      }
+
+      .caps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .cap {
+        padding: 4px 7px;
+        background: var(--tertiary-soft);
+        color: var(--tertiary);
+        font-size: 0.7rem;
+        border: 1px solid rgba(0, 100, 153, 0.18);
+      }
+
+      .actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .mini-btn {
+        border: 1px solid rgba(169, 180, 185, 0.45);
+        background: var(--surface);
+        padding: 5px 8px;
+        font-size: 0.76rem;
+        cursor: pointer;
+      }
+
+      .mini-btn.danger {
+        color: var(--error);
+      }
+
+      .operations {
+        border-top: 1px solid rgba(169, 180, 185, 0.35);
+        background: var(--surface-soft);
+        padding: 14px 20px 18px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .operations-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 12px;
+      }
+
+      .op-card {
+        background: var(--surface);
+        border: 1px solid rgba(169, 180, 185, 0.35);
+        padding: 12px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .progress-track {
+        height: 8px;
+        background: var(--surface-mid);
+      }
+
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary), var(--tertiary));
+        transition: width 220ms ease;
+      }
+
+      .recent-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .recent-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 0.8rem;
+      }
+
+      .inspector {
+        background: var(--surface);
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      .inspector-body {
+        min-height: 0;
+        overflow: auto;
+        padding: 16px 16px 18px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .inspector-block {
+        display: grid;
+        gap: 6px;
+      }
+
+      .inspector-block h4 {
+        margin: 0;
+        font-size: 0.69rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+
+      .content-box {
+        background: var(--surface-soft);
+        border: 1px solid rgba(169, 180, 185, 0.35);
+        padding: 10px;
+        font-size: 0.82rem;
+      }
+
+      .inspector-footer {
+        padding: 12px 16px 16px;
+        border-top: 1px solid rgba(169, 180, 185, 0.35);
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="brand">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span>OllaManager</span>
+          </div>
+          <nav class="main-nav" aria-label="Primary">
+            <a href="#" class="active">Models</a>
+            <a href="https://example.com/docs/ollamanager" target="_blank" rel="noreferrer">Help</a>
+          </nav>
+        </div>
+
+        <div class="topbar-right">
+          <input class="top-search" type="search" aria-label="Search all models" placeholder="Search models..." />
+          <button class="gear-button" aria-label="Settings" title="Settings">⚙</button>
+        </div>
+      </header>
+
+      <div class="shell">
+        <aside class="sidebar">
+          <div class="section-head">
+            <div class="eyebrow">Connections</div>
+            <div class="subtle">Saved remote servers</div>
+          </div>
+
+          <div class="sidebar-list">
+            <article class="connection active connected">
+              <div class="connection-top">
+                <span class="connection-name">★ Production Edge</span>
+                <span class="status-pill">Connected</span>
+              </div>
+              <div class="subtle mono">https://edge.example.net</div>
+              <div class="subtle">Last checked: 2026-04-19 11:18</div>
+              <div class="connection-actions">
+                <button class="tool-btn primary">Test</button>
+                <button class="tool-btn">Edit</button>
+                <button class="tool-btn danger">Delete</button>
+              </div>
+            </article>
+
+            <article class="connection connected">
+              <div class="connection-top">
+                <span class="connection-name">Localhost</span>
+                <span class="status-pill">Connected</span>
+              </div>
+              <div class="subtle mono">http://127.0.0.1:11434</div>
+              <div class="subtle">Last checked: 2026-04-19 11:11</div>
+              <div class="connection-actions">
+                <button class="tool-btn">Test</button>
+                <button class="tool-btn">Edit</button>
+                <button class="tool-btn danger">Delete</button>
+              </div>
+            </article>
+
+            <article class="connection unreachable">
+              <div class="connection-top">
+                <span class="connection-name">Staging</span>
+                <span class="status-pill">Unreachable</span>
+              </div>
+              <div class="subtle mono">https://staging.example.net</div>
+              <div class="subtle">Last checked: 2026-04-19 10:58</div>
+              <div class="connection-actions">
+                <button class="tool-btn">Test</button>
+                <button class="tool-btn">Edit</button>
+                <button class="tool-btn danger">Delete</button>
+              </div>
+            </article>
+          </div>
+
+          <div class="sidebar-footer">
+            <button class="tool-btn primary">Add Connection</button>
+            <div class="subtle" style="margin-top: 8px;">
+              Settings behind the gear: reset database, import/export connections, and light/dark mode.
+            </div>
+          </div>
+        </aside>
+
+        <main class="workspace">
+          <div class="workspace-header">
+            <div class="workspace-title">
+              <h1>Models</h1>
+              <p>Installed models on the selected connection</p>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <div class="field">
+                <label for="searchModels">Search</label>
+                <input id="searchModels" class="toolbar-search" type="search" placeholder="Search models" />
+              </div>
+            </div>
+
+            <div class="toolbar-right">
+              <button id="refreshBtn" class="tool-btn">Refresh</button>
+              <button id="pullBtn" class="tool-btn primary">Pull Model</button>
+            </div>
+          </div>
+
+          <div id="pullComposer" class="pull-composer">
+            <div class="field">
+              <label for="pullModelName">Model name</label>
+              <input id="pullModelName" type="text" value="gemma3:12b" />
+            </div>
+            <div class="field">
+              <label for="pullConnection">Connection</label>
+              <select id="pullConnection">
+                <option>Production Edge</option>
+                <option>Localhost</option>
+                <option>Staging</option>
+              </select>
+            </div>
+            <button id="startPull" class="tool-btn primary">Start Pull</button>
+            <button id="cancelPull" class="tool-btn">Cancel</button>
+          </div>
+
+          <div class="table-wrap">
+            <table aria-label="Models">
+              <thead>
+                <tr>
+                  <th>Model name</th>
+                  <th>Digest</th>
+                  <th>Family</th>
+                  <th>Size</th>
+                  <th>Parameter size</th>
+                  <th>Last modified</th>
+                  <th>Capabilities</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="selected">
+                  <td><strong>llama3:8b</strong></td>
+                  <td class="mono subtle">sha256:365c0bdce...</td>
+                  <td>Llama 3</td>
+                  <td>4.7 GB</td>
+                  <td>8B</td>
+                  <td>2026-04-17 13:42</td>
+                  <td>
+                    <div class="caps">
+                      <span class="cap">completion</span>
+                      <span class="cap">tools</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="actions">
+                      <button class="mini-btn">Details</button>
+                      <button class="mini-btn danger">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>llava:13b</strong></td>
+                  <td class="mono subtle">sha256:4f8e21a...</td>
+                  <td>LLaVA</td>
+                  <td>7.8 GB</td>
+                  <td>13B</td>
+                  <td>2026-04-14 08:20</td>
+                  <td>
+                    <div class="caps">
+                      <span class="cap">completion</span>
+                      <span class="cap">vision</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="actions">
+                      <button class="mini-btn">Details</button>
+                      <button class="mini-btn danger">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>mistral-nemo</strong></td>
+                  <td class="mono subtle">sha256:9a18c72...</td>
+                  <td>Mistral</td>
+                  <td>7.1 GB</td>
+                  <td>12B</td>
+                  <td>2026-04-12 18:11</td>
+                  <td>
+                    <div class="caps">
+                      <span class="cap">completion</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="actions">
+                      <button class="mini-btn">Details</button>
+                      <button class="mini-btn danger">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <section class="operations" aria-label="Operations">
+            <div class="eyebrow">Operations</div>
+            <div class="operations-grid">
+              <div class="op-card">
+                <strong>Active Pull</strong>
+                <div id="pullTitle">No active pull</div>
+                <div id="pullPhase" class="subtle">Use “Pull Model” to start a download.</div>
+                <div class="progress-track">
+                  <div id="pullBar" class="progress-fill"></div>
+                </div>
+              </div>
+
+              <div class="op-card">
+                <strong>Recent Actions</strong>
+                <ul id="recentActions" class="recent-list">
+                  <li><span>Refresh completed</span><span class="mono subtle">11:15</span></li>
+                  <li><span>Connection tested: Production Edge</span><span class="mono subtle">11:13</span></li>
+                  <li><span>Pull failed: gemma2:9b</span><span class="mono subtle">10:56</span></li>
+                </ul>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <aside class="inspector">
+          <div class="section-head">
+            <div class="eyebrow">Inspector</div>
+            <div class="subtle">Selected model details</div>
+          </div>
+
+          <div class="inspector-body">
+            <div class="inspector-block">
+              <h4>Model name</h4>
+              <div class="content-box">llama3:8b</div>
+            </div>
+
+            <div class="inspector-block">
+              <h4>Modelfile</h4>
+              <div class="content-box mono">FROM llama3:8b</div>
+            </div>
+
+            <div class="inspector-block">
+              <h4>Parameters</h4>
+              <div class="content-box mono">temperature 0.7&#10;top_p 0.9</div>
+            </div>
+
+            <div class="inspector-block">
+              <h4>Template</h4>
+              <div class="content-box mono">{{ .Prompt }}</div>
+            </div>
+
+            <div class="inspector-block">
+              <h4>License</h4>
+              <div class="content-box">Community license text…</div>
+            </div>
+
+            <div class="inspector-block">
+              <h4>Details</h4>
+              <div class="content-box">Family: llama<br />Parameter size: 8B<br />Quantization: Q4_K_M</div>
+            </div>
+
+            <div class="inspector-block">
+              <h4>Model info</h4>
+              <div class="content-box mono">{ "family": "llama", "context_length": 8192 }</div>
+            </div>
+          </div>
+
+          <div class="inspector-footer">
+            <span class="subtle">Raw payload only when present</span>
+            <button class="tool-btn">Close</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script>
+      const pullBtn = document.getElementById('pullBtn');
+      const pullComposer = document.getElementById('pullComposer');
+      const cancelPull = document.getElementById('cancelPull');
+      const startPull = document.getElementById('startPull');
+      const pullModelName = document.getElementById('pullModelName');
+      const pullConnection = document.getElementById('pullConnection');
+      const pullTitle = document.getElementById('pullTitle');
+      const pullPhase = document.getElementById('pullPhase');
+      const pullBar = document.getElementById('pullBar');
+      const recentActions = document.getElementById('recentActions');
+      const refreshBtn = document.getElementById('refreshBtn');
+
+      let intervalId = null;
+
+      function timeNow() {
+        return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+
+      function addRecentAction(message) {
+        const item = document.createElement('li');
+        item.innerHTML = `<span>${message}</span><span class="mono subtle">${timeNow()}</span>`;
+        recentActions.prepend(item);
+      }
+
+      pullBtn.addEventListener('click', () => {
+        pullComposer.classList.toggle('open');
+      });
+
+      cancelPull.addEventListener('click', () => {
+        pullComposer.classList.remove('open');
+      });
+
+      refreshBtn.addEventListener('click', () => {
+        addRecentAction('Refresh completed');
+      });
+
+      startPull.addEventListener('click', () => {
+        const model = pullModelName.value.trim() || 'unknown-model';
+        const connection = pullConnection.value;
+        pullComposer.classList.remove('open');
+
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+
+        let progress = 0;
+        let phaseIndex = 0;
+        const phases = [
+          'Pulling manifest',
+          'Downloading layers',
+          'Verifying digest',
+          'Writing manifest',
+          'Finalizing'
+        ];
+
+        pullTitle.textContent = `Pulling ${model}`;
+        pullPhase.textContent = `${phases[0]} on ${connection}`;
+        pullBar.style.width = '0%';
+        addRecentAction(`Pull started: ${model} on ${connection}`);
+
+        intervalId = setInterval(() => {
+          progress += Math.floor(Math.random() * 14) + 8;
+          if (progress > 100) progress = 100;
+
+          if (phaseIndex < phases.length - 1 && progress >= (phaseIndex + 1) * 20) {
+            phaseIndex += 1;
+          }
+
+          pullPhase.textContent = `${phases[phaseIndex]} — ${progress}%`;
+          pullBar.style.width = `${progress}%`;
+
+          if (progress >= 100) {
+            clearInterval(intervalId);
+            intervalId = null;
+            pullTitle.textContent = `${model} pull complete`;
+            pullPhase.textContent = `Completed on ${connection}`;
+            addRecentAction(`Pull completed: ${model}`);
+          }
+        }, 650);
+      });
+    </script>
+  </body>
+</html>

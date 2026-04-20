@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OllaManager Reviewed Workspace Prototype</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f3f6f8;
+        --shell: #e7eef2;
+        --panel: #ffffff;
+        --panel-soft: #f7fafc;
+        --sidebar: #edf3f6;
+        --text: #24323a;
+        --muted: #60717b;
+        --border: #d4dee4;
+        --accent: #0f4c81;
+        --accent-soft: #dbe7f3;
+        --success: #0f766e;
+        --danger: #b42318;
+        --warning: #b45309;
+        --shadow: 0 10px 30px rgba(36, 50, 58, 0.08);
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top left, rgba(15, 76, 129, 0.08), transparent 28%),
+          linear-gradient(180deg, #f8fafb, var(--bg));
+        color: var(--text);
+      }
+
+      .app {
+        height: 100vh;
+        display: grid;
+        grid-template-rows: 52px 1fr;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(212, 222, 228, 0.8);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+
+      .brand-mark {
+        width: 18px;
+        height: 18px;
+        background: linear-gradient(135deg, #0f172a, #475569);
+      }
+
+      .topnav, .topactions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .topnav a, .topactions button, .topactions a {
+        text-decoration: none;
+        color: var(--muted);
+        border: 1px solid transparent;
+        background: transparent;
+        font: inherit;
+        padding: 7px 10px;
+        cursor: pointer;
+      }
+
+      .topnav a.active {
+        color: var(--text);
+        background: var(--panel);
+        border-color: var(--border);
+      }
+
+      .topactions .gear {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border);
+        background: var(--panel);
+      }
+
+      .shell {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr) 360px;
+        gap: 10px;
+        padding: 10px;
+      }
+
+      .sidebar, .workspace, .inspector {
+        min-height: 0;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .sidebar {
+        display: grid;
+        grid-template-rows: auto auto 1fr auto;
+        background: var(--sidebar);
+      }
+
+      .panel-head {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(212, 222, 228, 0.65);
+      }
+
+      .panel-head h2, .panel-head h3 {
+        margin: 0;
+        font-size: 0.96rem;
+      }
+
+      .panel-sub {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .sidebar-tools {
+        display: flex;
+        gap: 8px;
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(212, 222, 228, 0.65);
+      }
+
+      button, .btn {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        color: var(--text);
+        font: inherit;
+        padding: 7px 10px;
+        cursor: pointer;
+      }
+
+      button.primary, .btn.primary {
+        background: linear-gradient(135deg, #425468, #324250);
+        border-color: #324250;
+        color: white;
+      }
+
+      button.linkish {
+        border: none;
+        background: transparent;
+        color: var(--accent);
+        padding: 0;
+      }
+
+      .connection-list {
+        overflow: auto;
+        padding: 12px 12px 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .connection-card {
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid var(--border);
+        display: grid;
+        gap: 6px;
+      }
+
+      .connection-card.active {
+        border-color: #9fb5c6;
+        background: #ffffff;
+      }
+
+      .connection-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #cbd5db;
+      }
+
+      .connected .dot { background: var(--success); }
+      .unreachable .dot { background: var(--danger); }
+      .loading .dot { background: var(--warning); }
+
+      .connection-url, .smallmono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .connection-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .sidebar-footer {
+        padding: 14px 16px;
+        border-top: 1px solid rgba(212, 222, 228, 0.65);
+        display: grid;
+        gap: 8px;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(212, 222, 228, 0.65);
+      }
+
+      .toolbar-title {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .toolbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .search {
+        width: 260px;
+        max-width: 100%;
+        border: 1px solid var(--border);
+        background: var(--panel-soft);
+        padding: 8px 10px;
+        font: inherit;
+      }
+
+      .pull-flow {
+        display: none;
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(212, 222, 228, 0.65);
+        background: var(--panel-soft);
+        gap: 10px;
+      }
+
+      .pull-flow.open {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) 220px auto auto;
+        align-items: end;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field label {
+        font-size: 0.76rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .field input, .field select {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        padding: 8px 10px;
+        font: inherit;
+      }
+
+      .table-wrap {
+        min-height: 0;
+        overflow: auto;
+        padding: 10px 16px 16px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+      }
+
+      th {
+        position: sticky;
+        top: 0;
+        background: var(--panel-soft);
+        z-index: 1;
+        text-align: left;
+        padding: 10px 10px;
+        color: var(--muted);
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-bottom: 1px solid rgba(212, 222, 228, 0.8);
+      }
+
+      td {
+        padding: 11px 10px;
+        border-bottom: 1px solid rgba(212, 222, 228, 0.55);
+        vertical-align: top;
+      }
+
+      tr.selected { background: #f7fbff; }
+      tr:hover { background: #fbfdfe; }
+
+      .caps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .cap {
+        padding: 3px 7px;
+        background: var(--accent-soft);
+        color: #264867;
+        font-size: 0.72rem;
+        border: 1px solid #c8d7e6;
+      }
+
+      .row-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .row-actions button {
+        padding: 5px 8px;
+        font-size: 0.78rem;
+      }
+
+      .danger {
+        color: var(--danger);
+      }
+
+      .inspector {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      .inspector-body {
+        min-height: 0;
+        overflow: auto;
+        padding: 14px 16px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .inspector-section {
+        display: grid;
+        gap: 8px;
+      }
+
+      .inspector-section h4 {
+        margin: 0;
+        font-size: 0.79rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+
+      .codeblock, .kv {
+        background: var(--panel-soft);
+        border: 1px solid rgba(212, 222, 228, 0.65);
+        padding: 10px;
+        font-size: 0.82rem;
+      }
+
+      .kv {
+        display: grid;
+        gap: 8px;
+      }
+
+      .kv-row {
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        gap: 8px;
+      }
+
+      .kv-row strong {
+        color: var(--muted);
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .inspector-footer {
+        padding: 12px 16px;
+        border-top: 1px solid rgba(212, 222, 228, 0.65);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .operations {
+        border-top: 1px solid rgba(212, 222, 228, 0.65);
+        background: #fbfdff;
+        padding: 12px 16px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .operations-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+        gap: 14px;
+      }
+
+      .op-card {
+        background: var(--panel);
+        border: 1px solid rgba(212, 222, 228, 0.65);
+        padding: 12px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .op-card h4 {
+        margin: 0;
+        font-size: 0.79rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+
+      .progress-track {
+        height: 8px;
+        background: #e6edf2;
+      }
+
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #4a6074, #0f4c81);
+        transition: width 220ms ease;
+      }
+
+      .recent-actions {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .recent-actions li {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 0.82rem;
+      }
+
+      .hint {
+        color: var(--muted);
+        font-size: 0.79rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>OllaManager</span>
+        </div>
+        <nav class="topnav" aria-label="Primary">
+          <a class="active" href="#">Models</a>
+          <a href="https://example.com/docs/ollamanager" target="_blank" rel="noreferrer">Help</a>
+        </nav>
+        <div class="topactions">
+          <button class="gear" aria-label="Settings" title="Settings">⚙</button>
+        </div>
+      </header>
+
+      <div class="shell">
+        <aside class="sidebar">
+          <div class="panel-head">
+            <h2>Connections</h2>
+            <div class="panel-sub">Remote Ollama servers</div>
+          </div>
+
+          <div class="sidebar-tools">
+            <button class="primary">Add</button>
+          </div>
+
+          <div class="connection-list">
+            <article class="connection-card active">
+              <div class="connection-top">
+                <strong>★ Production Edge</strong>
+                <span class="status connected"><span class="dot"></span>Connected</span>
+              </div>
+              <div class="connection-url">https://edge.example.net</div>
+              <div class="smallmono">Last checked: 2026-04-19 10:42</div>
+              <div class="connection-actions">
+                <button>Test</button>
+                <button>Edit</button>
+                <button class="danger">Delete</button>
+              </div>
+            </article>
+
+            <article class="connection-card">
+              <div class="connection-top">
+                <strong>Localhost</strong>
+                <span class="status connected"><span class="dot"></span>Connected</span>
+              </div>
+              <div class="connection-url">http://localhost:11434</div>
+              <div class="smallmono">Last checked: 2026-04-19 10:40</div>
+              <div class="connection-actions">
+                <button>Test</button>
+                <button>Edit</button>
+                <button class="danger">Delete</button>
+              </div>
+            </article>
+
+            <article class="connection-card">
+              <div class="connection-top">
+                <strong>Staging</strong>
+                <span class="status unreachable"><span class="dot"></span>Unreachable</span>
+              </div>
+              <div class="connection-url">https://staging.example.net</div>
+              <div class="smallmono">Last checked: 2026-04-19 09:58</div>
+              <div class="connection-actions">
+                <button>Test</button>
+                <button>Edit</button>
+                <button class="danger">Delete</button>
+              </div>
+            </article>
+          </div>
+
+          <div class="sidebar-footer">
+            <strong>Settings</strong>
+            <div class="hint">Reset database, import/export connections, and light/dark mode belong behind the gear entry point.</div>
+          </div>
+        </aside>
+
+        <section class="workspace">
+          <div class="toolbar">
+            <div class="toolbar-title">
+              <strong>Models</strong>
+              <span class="panel-sub">Installed models on the selected connection</span>
+            </div>
+            <div class="toolbar-actions">
+              <input class="search" type="search" aria-label="Search models" placeholder="Search models" />
+              <button id="refreshBtn">Refresh</button>
+              <button id="pullBtn" class="primary">Pull Model</button>
+            </div>
+          </div>
+
+          <div id="pullFlow" class="pull-flow" aria-live="polite">
+            <div class="field">
+              <label for="modelName">Model name</label>
+              <input id="modelName" type="text" value="gemma3:12b" />
+            </div>
+            <div class="field">
+              <label for="targetConnection">Connection</label>
+              <select id="targetConnection">
+                <option>Production Edge</option>
+                <option>Localhost</option>
+                <option>Staging</option>
+              </select>
+            </div>
+            <button id="startPull" class="primary">Start Pull</button>
+            <button id="cancelPullFlow">Cancel</button>
+          </div>
+
+          <div class="table-wrap">
+            <table aria-label="Models">
+              <thead>
+                <tr>
+                  <th>Model name</th>
+                  <th>Digest</th>
+                  <th>Family</th>
+                  <th>Size</th>
+                  <th>Parameter size</th>
+                  <th>Last modified</th>
+                  <th>Capabilities</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="selected">
+                  <td><strong>llama3:8b</strong></td>
+                  <td class="smallmono">sha256:8c17d4...be91</td>
+                  <td>Llama 3</td>
+                  <td>4.7 GB</td>
+                  <td>8B</td>
+                  <td>2026-04-18 14:12</td>
+                  <td>
+                    <div class="caps">
+                      <span class="cap">completion</span>
+                      <span class="cap">tools</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions">
+                      <button>Details</button>
+                      <button class="danger">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>llava:13b</strong></td>
+                  <td class="smallmono">sha256:9b5ad0...e20a</td>
+                  <td>LLaVA</td>
+                  <td>7.8 GB</td>
+                  <td>13B</td>
+                  <td>2026-04-17 19:24</td>
+                  <td>
+                    <div class="caps">
+                      <span class="cap">completion</span>
+                      <span class="cap">vision</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions">
+                      <button>Details</button>
+                      <button class="danger">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>mistral-nemo</strong></td>
+                  <td class="smallmono">sha256:ab0218...c87f</td>
+                  <td>Mistral</td>
+                  <td>7.1 GB</td>
+                  <td>12B</td>
+                  <td>2026-04-15 08:07</td>
+                  <td>
+                    <div class="caps">
+                      <span class="cap">completion</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions">
+                      <button>Details</button>
+                      <button class="danger">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <section class="operations" aria-label="Operations">
+            <div class="operations-grid">
+              <div class="op-card">
+                <h4>Active Pull</h4>
+                <strong id="pullTitle">No active pull</strong>
+                <div class="hint" id="pullPhase">Use “Pull Model” to start a download.</div>
+                <div class="progress-track" aria-hidden="true">
+                  <div id="pullProgress" class="progress-fill"></div>
+                </div>
+              </div>
+
+              <div class="op-card">
+                <h4>Recent Actions</h4>
+                <ul id="recentActions" class="recent-actions">
+                  <li><span>Connection tested: Production Edge</span><span class="smallmono">10:41</span></li>
+                  <li><span>Refresh completed</span><span class="smallmono">10:40</span></li>
+                  <li><span>Pull failed: gemma2:9b</span><span class="smallmono">10:18</span></li>
+                </ul>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <aside class="inspector">
+          <div class="panel-head">
+            <h3>Model Details</h3>
+            <div class="panel-sub">Selected model inspector</div>
+          </div>
+
+          <div class="inspector-body">
+            <div class="inspector-section">
+              <h4>Name</h4>
+              <div class="codeblock">llama3:8b</div>
+            </div>
+
+            <div class="inspector-section">
+              <h4>Details</h4>
+              <div class="kv">
+                <div class="kv-row"><strong>Digest</strong><span class="smallmono">sha256:8c17d4...be91</span></div>
+                <div class="kv-row"><strong>Family</strong><span>Llama 3</span></div>
+                <div class="kv-row"><strong>Parameter size</strong><span>8B</span></div>
+                <div class="kv-row"><strong>Quantization</strong><span>Q4_K_M</span></div>
+              </div>
+            </div>
+
+            <div class="inspector-section">
+              <h4>Parameters</h4>
+              <div class="codeblock">temperature 0.7&#10;top_p 0.9</div>
+            </div>
+
+            <div class="inspector-section">
+              <h4>Template</h4>
+              <div class="codeblock">{{ .Prompt }}</div>
+            </div>
+
+            <div class="inspector-section">
+              <h4>License</h4>
+              <div class="codeblock">Custom model license text…</div>
+            </div>
+
+            <div class="inspector-section">
+              <h4>Model Info</h4>
+              <div class="codeblock">{ "context_length": 8192, "family": "llama" }</div>
+            </div>
+          </div>
+
+          <div class="inspector-footer">
+            <span class="hint">Raw payload only when present</span>
+            <button>Close</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script>
+      const pullBtn = document.getElementById('pullBtn');
+      const pullFlow = document.getElementById('pullFlow');
+      const cancelPullFlow = document.getElementById('cancelPullFlow');
+      const startPull = document.getElementById('startPull');
+      const modelName = document.getElementById('modelName');
+      const targetConnection = document.getElementById('targetConnection');
+      const pullTitle = document.getElementById('pullTitle');
+      const pullPhase = document.getElementById('pullPhase');
+      const pullProgress = document.getElementById('pullProgress');
+      const recentActions = document.getElementById('recentActions');
+      const refreshBtn = document.getElementById('refreshBtn');
+
+      let activeInterval = null;
+
+      function nowTime() {
+        return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+
+      function pushAction(message) {
+        const item = document.createElement('li');
+        item.innerHTML = `<span>${message}</span><span class="smallmono">${nowTime()}</span>`;
+        recentActions.prepend(item);
+      }
+
+      function closePullComposer() {
+        pullFlow.classList.remove('open');
+      }
+
+      pullBtn.addEventListener('click', () => {
+        pullFlow.classList.toggle('open');
+      });
+
+      cancelPullFlow.addEventListener('click', closePullComposer);
+
+      refreshBtn.addEventListener('click', () => {
+        pushAction('Refresh completed');
+      });
+
+      startPull.addEventListener('click', () => {
+        const model = modelName.value.trim() || 'unknown-model';
+        const connection = targetConnection.value;
+
+        if (activeInterval) {
+          window.clearInterval(activeInterval);
+        }
+
+        closePullComposer();
+        pullTitle.textContent = `Pulling ${model}`;
+        pullPhase.textContent = `Queued on ${connection}`;
+        pullProgress.style.width = '0%';
+        pushAction(`Pull started: ${model} on ${connection}`);
+
+        const phases = [
+          'Pulling manifest',
+          'Downloading layers',
+          'Verifying digest',
+          'Writing manifest',
+          'Finalizing model'
+        ];
+
+        let progress = 0;
+        let phaseIndex = 0;
+
+        activeInterval = window.setInterval(() => {
+          progress += Math.floor(Math.random() * 16) + 8;
+          if (progress > 100) progress = 100;
+          if (phaseIndex < phases.length - 1 && progress >= (phaseIndex + 1) * 22) {
+            phaseIndex += 1;
+          }
+
+          pullPhase.textContent = `${phases[phaseIndex]} — ${progress}%`;
+          pullProgress.style.width = `${progress}%`;
+
+          if (progress >= 100) {
+            window.clearInterval(activeInterval);
+            activeInterval = null;
+            pullTitle.textContent = `${model} pull complete`;
+            pullPhase.textContent = `Completed on ${connection}`;
+            pushAction(`Pull completed: ${model}`);
+          }
+        }, 700);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OllaManager | Tactical Console</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#002d47",
+                        "secondary": "#526074",
+                        "on-primary-fixed-variant": "#535b71",
+                        "on-tertiary": "#f6f9ff",
+                        "on-primary": "#f7f7ff",
+                        "error": "#9f403d",
+                        "tertiary": "#006499",
+                        "inverse-primary": "#dae2fd",
+                        "surface-container-high": "#ddeaf3",
+                        "error-dim": "#4e0309",
+                        "surface-container": "#e5eff7",
+                        "surface-variant": "#d5e5ef",
+                        "surface": "#f6fafe",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#51b0f6",
+                        "surface-dim": "#cadde9",
+                        "surface-bright": "#f6fafe",
+                        "on-background": "#26343d",
+                        "inverse-on-surface": "#999da1",
+                        "on-error": "#fff7f6",
+                        "surface-container-low": "#eef4fa",
+                        "on-primary-container": "#4a5167",
+                        "primary-fixed-dim": "#ccd4ee",
+                        "primary-fixed": "#dae2fd",
+                        "on-tertiary-fixed-variant": "#003655",
+                        "secondary-container": "#d5e3fc",
+                        "surface-tint": "#565e74",
+                        "outline-variant": "#a4b4be",
+                        "on-secondary-container": "#455367",
+                        "tertiary-fixed-dim": "#40a2e7",
+                        "on-secondary": "#f8f8ff",
+                        "outline": "#6e7d86",
+                        "background": "#f6fafe",
+                        "tertiary-dim": "#005886",
+                        "on-secondary-fixed": "#324053",
+                        "on-surface": "#26343d",
+                        "secondary-dim": "#465468",
+                        "surface-container-highest": "#d5e5ef",
+                        "error-container": "#fe8983",
+                        "on-secondary-fixed-variant": "#4e5c71",
+                        "inverse-surface": "#0a0f12",
+                        "on-surface-variant": "#52616a",
+                        "on-error-container": "#752121",
+                        "primary": "#565e74",
+                        "tertiary-fixed": "#51b0f6",
+                        "on-tertiary-fixed": "#000d19",
+                        "secondary-fixed": "#d5e3fc",
+                        "primary-dim": "#4a5268",
+                        "secondary-fixed-dim": "#c7d5ed",
+                        "on-primary-fixed": "#373f54",
+                        "primary-container": "#dae2fd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 1.25rem;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface select-none overflow-hidden h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-4 w-full z-50 fixed top-0 bg-[#f6fafe] border-b border-[#a4b4be]/15 h-[40px]">
+<div class="flex items-center gap-6">
+<span class="text-sm font-bold tracking-tighter text-[#26343d] uppercase">OLLAMA_CONSOLE_V1</span>
+<div class="flex items-center gap-2 px-2 py-0.5 bg-surface-container-low rounded-sm">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="bg-transparent border-none text-[0.75rem] focus:ring-0 p-0 w-48 font-medium" placeholder="Search connections..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#565e74] hover:bg-[#ddeaf3] transition-colors cursor-pointer p-1 rounded">refresh</span>
+<span class="material-symbols-outlined text-[#565e74] hover:bg-[#ddeaf3] transition-colors cursor-pointer p-1 rounded">settings</span>
+<span class="material-symbols-outlined text-[#565e74] hover:bg-[#ddeaf3] transition-colors cursor-pointer p-1 rounded">dns</span>
+<div class="h-6 w-6 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+<img alt="Administrator" class="w-full h-full object-cover" data-alt="professional corporate headshot of a system administrator in a high-tech environment with soft blue lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiKCHdQsM0lavGcixEPO32R5pcuiUFZbQ3GmnqvbXf-AWM64pu6Fac-74dnzgCoTofUG6roMKNZm_efYVB9TIp0qwmrSAGX_KCF5diBYD1uoalAYS-2_EpI_AxJLDQkEbrU77lxCt5f4bRNZojaNetvvg_krd84DxSd_kVfvsVbmVrUK-OUxDLtPTXXAK5ugwvnoZKSyDZlSZsoR3UkavHLrDq4ylavvZWeAWV5lb68lK0lrhG5d8bwSuB-8rRgnOCrSsdb_nbzRc"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 pt-[40px]">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-10 h-[calc(100vh-40px)] flex flex-col border-r border-[#a4b4be]/15 bg-[#eef4fa] w-64">
+<div class="p-4 flex flex-col gap-1">
+<span class="font-['Inter'] text-[0.6875rem] uppercase tracking-widest font-semibold text-[#565e74] mb-2">WORKSPACE</span>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-surface-container-highest rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[0.75rem] font-bold text-[#26343d]">Ollama Logo</span>
+<span class="text-[0.65rem] text-error font-medium">Disconnected</span>
+</div>
+</div>
+</div>
+<div class="flex-1 mt-4">
+<!-- Navigation Items - Nodes Active -->
+<a class="flex items-center gap-3 px-4 py-2 my-1 bg-[#ffffff] text-[#006499] border-r-2 border-[#006499] font-['Inter'] text-[0.6875rem] uppercase tracking-widest font-semibold transition-all" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span>Nodes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 my-1 text-[#52616a] hover:bg-[#ddeaf3]/50 font-['Inter'] text-[0.6875rem] uppercase tracking-widest font-semibold transition-all" href="#">
+<span class="material-symbols-outlined">deployed_code</span>
+<span>Local Models</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 my-1 text-[#52616a] hover:bg-[#ddeaf3]/50 font-['Inter'] text-[0.6875rem] uppercase tracking-widest font-semibold transition-all" href="#">
+<span class="material-symbols-outlined">cloud_download</span>
+<span>Pull Progress</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 my-1 text-[#52616a] hover:bg-[#ddeaf3]/50 font-['Inter'] text-[0.6875rem] uppercase tracking-widest font-semibold transition-all" href="#">
+<span class="material-symbols-outlined">terminal</span>
+<span>System Logs</span>
+</a>
+</div>
+<div class="p-4 border-t border-outline-variant/10">
+<button class="w-full bg-primary text-white py-2 rounded-sm text-[0.75rem] font-bold uppercase tracking-tight hover:bg-primary-dim transition-all">
+                    Connect Server
+                </button>
+<div class="mt-4 flex flex-col gap-2">
+<a class="flex items-center gap-2 text-[#52616a] hover:text-[#26343d] text-[0.6875rem] font-semibold transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">menu_book</span> Documentation
+                    </a>
+<a class="flex items-center gap-2 text-[#52616a] hover:text-[#26343d] text-[0.6875rem] font-semibold transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">help_center</span> Support
+                    </a>
+</div>
+</div>
+</nav>
+<!-- Main Dashboard Canvas (Three Pane Layout) -->
+<main class="ml-64 flex flex-1 overflow-hidden bg-surface">
+<!-- Pane 1: Server List -->
+<section class="w-80 border-r border-outline-variant/15 flex flex-col bg-surface-container-low/30">
+<div class="p-3 bg-surface-container-high/50 border-b border-outline-variant/15 flex justify-between items-center">
+<h2 class="text-[0.75rem] font-bold text-on-surface uppercase tracking-tight">Active Clusters</h2>
+<span class="material-symbols-outlined text-sm text-on-surface-variant cursor-pointer">add_circle</span>
+</div>
+<div class="flex-1 overflow-y-auto">
+<!-- Server Item -->
+<div class="p-3 hover:bg-surface-container-high transition-colors border-b border-outline-variant/10 cursor-pointer group">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline-variant mt-0.5">router</span>
+<div class="flex-1">
+<div class="flex justify-between">
+<span class="text-[0.8125rem] font-semibold text-on-surface">Production-Node-01</span>
+<span class="text-[0.65rem] font-bold text-error">OFF</span>
+</div>
+<code class="text-[0.65rem] text-on-surface-variant block mt-1 font-mono">192.168.1.105:11434</code>
+<div class="flex gap-1 mt-2">
+<span class="px-1.5 py-0.5 bg-surface-container-highest text-[0.6rem] text-on-surface-variant font-medium rounded-full">v0.1.32</span>
+<span class="px-1.5 py-0.5 bg-surface-container-highest text-[0.6rem] text-on-surface-variant font-medium rounded-full">Linux-x64</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Server Item -->
+<div class="p-3 hover:bg-surface-container-high transition-colors border-b border-outline-variant/10 cursor-pointer">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline-variant mt-0.5">dns</span>
+<div class="flex-1">
+<div class="flex justify-between">
+<span class="text-[0.8125rem] font-semibold text-on-surface">Localhost-Dev</span>
+<span class="text-[0.65rem] font-bold text-error">OFF</span>
+</div>
+<code class="text-[0.65rem] text-on-surface-variant block mt-1 font-mono">127.0.0.1:11434</code>
+<div class="flex gap-1 mt-2">
+<span class="px-1.5 py-0.5 bg-surface-container-highest text-[0.6rem] text-on-surface-variant font-medium rounded-full">v0.2.1</span>
+<span class="px-1.5 py-0.5 bg-surface-container-highest text-[0.6rem] text-on-surface-variant font-medium rounded-full">macOS-arm</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Server Item -->
+<div class="p-3 hover:bg-surface-container-high transition-colors border-b border-outline-variant/10 cursor-pointer">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline-variant mt-0.5">cloud_off</span>
+<div class="flex-1">
+<div class="flex justify-between">
+<span class="text-[0.8125rem] font-semibold text-on-surface">Remote-GPU-A100</span>
+<span class="text-[0.65rem] font-bold text-error">OFF</span>
+</div>
+<code class="text-[0.65rem] text-on-surface-variant block mt-1 font-mono">ollama.internal.net</code>
+<div class="flex gap-1 mt-2">
+<span class="px-1.5 py-0.5 bg-surface-container-highest text-[0.6rem] text-on-surface-variant font-medium rounded-full">TLS-Enabled</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Pane 2: Center Canvas (Empty State) -->
+<section class="flex-1 flex flex-col bg-surface relative overflow-hidden">
+<!-- Visual Background Subtle Grid -->
+<div class="absolute inset-0 pointer-events-none opacity-[0.03]" style="background-image: radial-gradient(#26343d 1px, transparent 1px); background-size: 20px 20px;"></div>
+<div class="relative z-10 flex-1 flex flex-col items-center justify-center p-8">
+<div class="w-full max-w-lg text-center space-y-8">
+<div class="relative inline-block">
+<!-- Tactical Illustration Placeholder -->
+<div class="w-64 h-64 mx-auto rounded-xl bg-surface-container-low flex items-center justify-center p-6 border border-outline-variant/10 overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-tr from-surface-container-high/50 to-transparent"></div>
+<span class="material-symbols-outlined text-[80px] text-outline-variant opacity-40 select-none" style="font-variation-settings: 'wght' 200;">sensors_off</span>
+</div>
+<div class="absolute -bottom-4 -right-4 w-24 h-24 bg-surface rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-error text-[32px]">link_off</span>
+</div>
+</div>
+<div class="space-y-3">
+<h1 class="text-2xl font-black text-on-surface tracking-tighter uppercase">No Active Connection</h1>
+<p class="text-on-surface-variant text-sm max-w-sm mx-auto leading-relaxed">
+                                Establish a connection to an Ollama server to manage models, monitor performance, and view system analytics.
+                            </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-3 justify-center">
+<button class="px-6 py-2.5 bg-tertiary text-white rounded-sm text-[0.75rem] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-tertiary-dim transition-all shadow-sm">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+                                Select a Connection
+                            </button>
+<button class="px-6 py-2.5 bg-surface-container-highest text-on-surface rounded-sm text-[0.75rem] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                                Add New Server
+                            </button>
+</div>
+<div class="pt-8 border-t border-outline-variant/10">
+<div class="flex items-center justify-center gap-8 opacity-60">
+<div class="flex flex-col items-center gap-1">
+<span class="text-[0.6rem] font-bold text-on-surface-variant uppercase">Uptime</span>
+<span class="text-[0.8rem] font-mono text-on-surface">-- : -- : --</span>
+</div>
+<div class="w-px h-6 bg-outline-variant/20"></div>
+<div class="flex flex-col items-center gap-1">
+<span class="text-[0.6rem] font-bold text-on-surface-variant uppercase">Model Count</span>
+<span class="text-[0.8rem] font-mono text-on-surface">0</span>
+</div>
+<div class="w-px h-6 bg-outline-variant/20"></div>
+<div class="flex flex-col items-center gap-1">
+<span class="text-[0.6rem] font-bold text-on-surface-variant uppercase">Network Latency</span>
+<span class="text-[0.8rem] font-mono text-on-surface">-- ms</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Status Bar -->
+<div class="h-8 bg-surface-container-low border-t border-outline-variant/15 px-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<span class="text-[0.65rem] font-bold uppercase text-on-surface-variant">System Offline</span>
+</div>
+<span class="text-[0.65rem] text-outline">|</span>
+<span class="text-[0.65rem] font-medium text-on-surface-variant">OllaManager v1.0.4-stable</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-[0.65rem] font-medium text-on-surface-variant">Memory Usage: 42MB</span>
+<span class="text-[0.65rem] font-medium text-on-surface-variant">CPU: 0.1%</span>
+</div>
+</div>
+</section>
+<!-- Pane 3: Inspector -->
+<aside class="w-80 bg-surface-container-low/50 border-l border-outline-variant/15 flex flex-col">
+<div class="p-3 bg-surface-container-high/50 border-b border-outline-variant/15">
+<h2 class="text-[0.75rem] font-bold text-on-surface uppercase tracking-tight">Inspector</h2>
+</div>
+<div class="p-6 flex flex-col items-center justify-center flex-1 text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-outline-variant">info</span>
+</div>
+<h3 class="text-[0.85rem] font-bold text-on-surface mb-2">No Entity Selected</h3>
+<p class="text-[0.7rem] text-on-surface-variant leading-relaxed">
+                        To view detailed telemetry, model configuration, or parameter weights, please select an active connection from the left panel and click on a specific model node.
+                    </p>
+</div>
+<!-- Placeholder Data Mockup -->
+<div class="p-4 border-t border-outline-variant/10 opacity-30 select-none">
+<div class="space-y-4">
+<div class="space-y-1">
+<div class="h-2 w-1/2 bg-outline-variant/20 rounded"></div>
+<div class="h-3 w-full bg-outline-variant/10 rounded"></div>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="h-10 bg-outline-variant/5 rounded"></div>
+<div class="h-10 bg-outline-variant/5 rounded"></div>
+<div class="h-10 bg-outline-variant/5 rounded"></div>
+<div class="h-10 bg-outline-variant/5 rounded"></div>
+</div>
+<div class="h-24 bg-outline-variant/5 rounded border border-dashed border-outline-variant/20"></div>
+</div>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

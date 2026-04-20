@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OllaManager Workspace from 05</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f9fb;
+        --surface: #ffffff;
+        --surface-low: #f0f4f7;
+        --surface-high: #e7edf2;
+        --surface-highest: #d9e4ea;
+        --text: #2a3439;
+        --muted: #566166;
+        --outline: #a9b4b9;
+        --primary: #565e74;
+        --primary-dim: #4a5268;
+        --primary-soft: #dae2fd;
+        --tertiary: #006499;
+        --tertiary-soft: #e2f1fb;
+        --error: #9f403d;
+        --error-soft: #fff1f0;
+        --shadow: 0 6px 20px rgba(42, 52, 57, 0.05);
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      button, input, select { font: inherit; }
+
+      .app {
+        height: 100vh;
+        display: grid;
+        grid-template-rows: 56px 1fr;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 18px;
+        background: #f8fafb;
+        border-bottom: 1px solid rgba(169, 180, 185, 0.28);
+      }
+
+      .brand-wrap {
+        display: flex;
+        align-items: center;
+        gap: 26px;
+      }
+
+      .brand {
+        font-size: 1.08rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      .main-nav {
+        display: flex;
+        gap: 20px;
+        font-size: 0.95rem;
+      }
+
+      .main-nav a {
+        text-decoration: none;
+        color: var(--muted);
+        padding: 16px 0 14px;
+        border-bottom: 2px solid transparent;
+      }
+
+      .main-nav a.active {
+        color: var(--text);
+        font-weight: 600;
+        border-bottom-color: #6b7280;
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .search-wrap {
+        position: relative;
+      }
+
+      .search-wrap input {
+        width: 240px;
+        background: var(--surface-low);
+        border: none;
+        padding: 9px 12px;
+      }
+
+      .btn {
+        border: 1px solid transparent;
+        background: var(--surface-high);
+        color: var(--text);
+        padding: 9px 12px;
+        cursor: pointer;
+      }
+
+      .btn.primary {
+        background: linear-gradient(180deg, var(--primary), var(--primary-dim));
+        color: #f7f7ff;
+      }
+
+      .btn.icon {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: grid;
+        place-items: center;
+      }
+
+      .shell {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 232px minmax(0, 1fr) 292px;
+        gap: 0;
+      }
+
+      .sidebar {
+        background: #eef3f7;
+        padding: 18px 14px;
+        overflow: auto;
+      }
+
+      .workspace {
+        background: var(--bg);
+        padding: 24px 28px;
+        overflow: auto;
+      }
+
+      .inspector {
+        background: var(--surface-low);
+        border-left: 1px solid rgba(169, 180, 185, 0.2);
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        overflow: hidden;
+      }
+
+      .eyebrow {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      .small {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      }
+
+      .connection-list {
+        margin-top: 20px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .connection-card {
+        position: relative;
+        background: rgba(255, 255, 255, 0.84);
+        padding: 12px 12px 12px 14px;
+        box-shadow: var(--shadow);
+      }
+
+      .connection-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 16px;
+        width: 3px;
+        height: calc(100% - 32px);
+        background: var(--outline);
+      }
+
+      .connection-card.active::before,
+      .connection-card.connected::before { background: var(--tertiary); }
+      .connection-card.unreachable::before { background: var(--error); }
+
+      .connection-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+
+      .connection-name {
+        font-weight: 800;
+        font-size: 0.84rem;
+        letter-spacing: -0.01em;
+      }
+
+      .status {
+        font-size: 0.66rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .connection-actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 6px;
+      }
+
+      .connection-actions .btn {
+        padding: 6px 10px;
+        background: var(--surface);
+        border: 1px solid rgba(169, 180, 185, 0.42);
+      }
+
+      .connection-actions .btn.danger { color: var(--error); }
+
+      .sidebar-foot {
+        margin-top: 20px;
+      }
+
+      .workspace-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+
+      .workspace-header h1 {
+        margin: 0;
+        font-size: 2.05rem;
+        letter-spacing: -0.05em;
+      }
+
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 18px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      .toolbar .left,
+      .toolbar .right {
+        display: flex;
+        gap: 10px;
+        align-items: end;
+      }
+
+      .field {
+        display: grid;
+        gap: 5px;
+      }
+
+      .field label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      .field input, .field select {
+        background: var(--surface-low);
+        border: 1px solid rgba(169, 180, 185, 0.35);
+        padding: 9px 12px;
+      }
+
+      .pull-flow {
+        display: none;
+        grid-template-columns: minmax(220px, 1fr) 220px auto auto;
+        gap: 10px;
+        align-items: end;
+        margin-bottom: 16px;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.72);
+        box-shadow: var(--shadow);
+      }
+
+      .pull-flow.open { display: grid; }
+
+      .table-shell {
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead th {
+        background: var(--surface-low);
+        font-size: 0.69rem;
+        text-transform: uppercase;
+        letter-spacing: 0.11em;
+        text-align: left;
+        color: #6b7780;
+        padding: 14px 16px;
+      }
+
+      tbody td {
+        padding: 14px 16px;
+        border-top: 1px solid rgba(169, 180, 185, 0.18);
+        vertical-align: top;
+        font-size: 0.84rem;
+      }
+
+      tbody tr.selected {
+        background: rgba(218, 226, 253, 0.25);
+        box-shadow: inset 4px 0 0 var(--primary);
+      }
+
+      .caps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .cap {
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-size: 0.7rem;
+        padding: 4px 7px;
+      }
+
+      .row-actions {
+        display: flex;
+        justify-content: end;
+        gap: 6px;
+      }
+
+      .row-actions .btn {
+        padding: 6px 10px;
+        font-size: 0.76rem;
+        background: transparent;
+        border: 1px solid rgba(169, 180, 185, 0.4);
+      }
+
+      .row-actions .btn.danger { color: var(--error); }
+
+      .operations {
+        margin-top: 18px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .operations-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      .ops-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 12px;
+      }
+
+      .ops-card {
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        padding: 14px;
+      }
+
+      .ops-card h3 {
+        margin: 0 0 8px;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+      }
+
+      .progress-track {
+        margin-top: 10px;
+        height: 6px;
+        background: var(--surface-high);
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--tertiary);
+        transition: width 220ms ease;
+      }
+
+      .recent-actions {
+        display: grid;
+        gap: 8px;
+      }
+
+      .recent-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 0.78rem;
+      }
+
+      .inspector-head {
+        padding: 20px;
+        border-bottom: 1px solid rgba(169, 180, 185, 0.18);
+      }
+
+      .inspector-body {
+        overflow: auto;
+        padding: 20px;
+        display: grid;
+        gap: 18px;
+      }
+
+      .inspector-section {
+        display: grid;
+        gap: 8px;
+      }
+
+      .inspector-section h4 {
+        margin: 0;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        font-weight: 800;
+      }
+
+      .inspector-box {
+        background: var(--surface);
+        border: 1px solid rgba(169, 180, 185, 0.2);
+        padding: 10px 12px;
+        font-size: 0.82rem;
+      }
+
+      .inspector-foot {
+        padding: 16px 20px;
+        border-top: 1px solid rgba(169, 180, 185, 0.18);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <div class="brand">OllaManager</div>
+          <nav class="main-nav">
+            <a href="#" class="active">Models</a>
+            <a href="https://example.com/docs/ollamanager" target="_blank" rel="noreferrer">Help</a>
+          </nav>
+        </div>
+        <div class="top-actions">
+          <div class="search-wrap">
+            <input type="search" placeholder="Search models..." />
+          </div>
+          <button class="btn icon" aria-label="Settings" title="Settings">⚙</button>
+        </div>
+      </header>
+
+      <div class="shell">
+        <aside class="sidebar">
+          <div>
+            <div class="eyebrow">Connections</div>
+            <div class="small">3 active servers</div>
+          </div>
+
+          <div class="connection-list">
+            <article class="connection-card active connected">
+              <div class="connection-head">
+                <span class="connection-name">Localhost</span>
+                <span class="status">Connected</span>
+              </div>
+              <div class="small mono">http://127.0.0.1:11434</div>
+              <div class="small">Last checked: 2026-04-19 11:18</div>
+              <div class="connection-actions">
+                <button class="btn">Test</button>
+                <button class="btn">Edit</button>
+                <button class="btn danger">Delete</button>
+              </div>
+            </article>
+
+            <article class="connection-card connected">
+              <div class="connection-head">
+                <span class="connection-name">Production-Edge</span>
+                <span class="status">Connected</span>
+              </div>
+              <div class="small mono">https://api.ollama.internal</div>
+              <div class="small">Last checked: 2026-04-19 10:42</div>
+              <div class="connection-actions">
+                <button class="btn">Test</button>
+                <button class="btn">Edit</button>
+                <button class="btn danger">Delete</button>
+              </div>
+            </article>
+
+            <article class="connection-card unreachable">
+              <div class="connection-head">
+                <span class="connection-name">Staging-Archive</span>
+                <span class="status">Unreachable</span>
+              </div>
+              <div class="small mono">http://192.168.1.45:11434</div>
+              <div class="small">Last checked: 2026-04-19 09:58</div>
+              <div class="connection-actions">
+                <button class="btn">Test</button>
+                <button class="btn">Edit</button>
+                <button class="btn danger">Delete</button>
+              </div>
+            </article>
+          </div>
+
+          <div class="sidebar-foot">
+            <button class="btn primary">New Connection</button>
+          </div>
+        </aside>
+
+        <main class="workspace">
+          <div class="workspace-header">
+            <div>
+              <h1>Models</h1>
+              <div class="small">Manage models on the selected Ollama connection</div>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <div class="left"></div>
+            <div class="right">
+              <button class="btn" id="refresh-button">Refresh</button>
+              <button class="btn primary" id="pull-button">Pull Model</button>
+            </div>
+          </div>
+
+          <div class="pull-flow" id="pull-flow">
+            <div class="field">
+              <label for="pull-model-name">Model name</label>
+              <input id="pull-model-name" type="text" value="gemma3:12b" />
+            </div>
+            <div class="field">
+              <label for="pull-connection">Connection</label>
+              <select id="pull-connection">
+                <option>Localhost</option>
+                <option>Production-Edge</option>
+                <option>Staging-Archive</option>
+              </select>
+            </div>
+            <button class="btn primary" id="pull-start">Start Pull</button>
+            <button class="btn" id="pull-cancel">Cancel</button>
+          </div>
+
+          <div class="table-shell">
+            <table>
+              <thead>
+                <tr>
+                  <th>Model Name</th>
+                  <th>Digest</th>
+                  <th>Family</th>
+                  <th>Size</th>
+                  <th>Parameter Size</th>
+                  <th>Last Modified</th>
+                  <th>Capabilities</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="selected">
+                  <td><strong>llama3:8b</strong></td>
+                  <td class="mono small">sha256:365c0bdce...</td>
+                  <td>Llama 3</td>
+                  <td>4.7 GB</td>
+                  <td>8B</td>
+                  <td>2 days ago</td>
+                  <td>
+                    <div class="caps">
+                      <span class="cap">completion</span>
+                      <span class="cap">tools</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="btn">Details</button>
+                      <button class="btn danger">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>mistral-nemo:12b</strong></td>
+                  <td class="mono small">sha256:4f8e21a...</td>
+                  <td>Mistral</td>
+                  <td>7.1 GB</td>
+                  <td>12B</td>
+                  <td>5 hours ago</td>
+                  <td>
+                    <div class="caps">
+                      <span class="cap">completion</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="btn">Details</button>
+                      <button class="btn danger">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>llava:13b</strong></td>
+                  <td class="mono small">sha256:992d1c3...</td>
+                  <td>LLaVA</td>
+                  <td>3.8 GB</td>
+                  <td>13B</td>
+                  <td>1 week ago</td>
+                  <td>
+                    <div class="caps">
+                      <span class="cap">completion</span>
+                      <span class="cap">vision</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="btn">Details</button>
+                      <button class="btn danger">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <section class="operations">
+            <div class="operations-label">Operations</div>
+            <div class="ops-grid">
+              <div class="ops-card">
+                <h3>Active Pull</h3>
+                <div id="active-pull-label">No active pull</div>
+                <div class="small" id="active-pull-phase">Use “Pull Model” to start a download.</div>
+                <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+                <div class="small mono" id="active-pull-percent">0%</div>
+              </div>
+              <div class="ops-card">
+                <h3>Recent Actions</h3>
+                <div class="recent-actions" id="recent-actions">
+                  <div class="recent-item"><span>Pull failed: gemma-2-9b</span><span class="mono small">10:18</span></div>
+                  <div class="recent-item"><span>Refresh completed</span><span class="mono small">10:16</span></div>
+                  <div class="recent-item"><span>Connection tested: Production-Edge</span><span class="mono small">10:12</span></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <aside class="inspector">
+          <div class="inspector-head">
+            <div class="eyebrow">Model Inspector</div>
+            <div style="font-size:1.5rem;font-weight:800;letter-spacing:-0.04em;margin-top:4px;">llama3:8b</div>
+          </div>
+
+          <div class="inspector-body">
+            <section class="inspector-section">
+              <h4>Modelfile</h4>
+              <div class="inspector-box mono">
+                <span style="color:#51b0f6;">FROM</span> llama3:8b<br />
+                <span style="color:#51b0f6;">PARAMETER</span> temperature 0.7<br />
+                <span style="color:#51b0f6;">TEMPLATE</span> "{{ .System }}..."
+              </div>
+            </section>
+
+            <section class="inspector-section">
+              <h4>License & Details</h4>
+              <div class="inspector-box">
+                <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(169,180,185,.18);"><span class="small">License</span><strong>Community</strong></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(169,180,185,.18);"><span class="small">Family</span><strong>Llama 3</strong></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(169,180,185,.18);"><span class="small">Parameter Size</span><strong>8B</strong></div>
+                <div style="display:flex;justify-content:space-between;padding-top:8px;"><span class="small">Quantization</span><strong>Q4_K_M</strong></div>
+              </div>
+            </section>
+
+            <section class="inspector-section">
+              <h4>Model Info</h4>
+              <div class="inspector-box mono">{ "family": "llama", "context_length": 8192 }</div>
+            </section>
+          </div>
+
+          <div class="inspector-foot">
+            <span class="small">Raw payload only when present</span>
+            <button class="btn">Close</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script>
+      const pullButton = document.getElementById('pull-button');
+      const pullFlow = document.getElementById('pull-flow');
+      const pullStart = document.getElementById('pull-start');
+      const pullCancel = document.getElementById('pull-cancel');
+      const pullModelName = document.getElementById('pull-model-name');
+      const pullConnection = document.getElementById('pull-connection');
+      const progressBar = document.getElementById('progress-bar');
+      const activePullLabel = document.getElementById('active-pull-label');
+      const activePullPhase = document.getElementById('active-pull-phase');
+      const activePullPercent = document.getElementById('active-pull-percent');
+      const recentActions = document.getElementById('recent-actions');
+      const refreshButton = document.getElementById('refresh-button');
+
+      let progressTimer = null;
+
+      function stamp() {
+        return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+
+      function addRecent(message) {
+        const row = document.createElement('div');
+        row.className = 'recent-item';
+        row.innerHTML = `<span>${message}</span><span class="mono small">${stamp()}</span>`;
+        recentActions.prepend(row);
+      }
+
+      pullButton.addEventListener('click', () => {
+        pullFlow.classList.toggle('open');
+      });
+
+      pullCancel.addEventListener('click', () => {
+        pullFlow.classList.remove('open');
+      });
+
+      refreshButton.addEventListener('click', () => {
+        addRecent('Refresh completed');
+      });
+
+      pullStart.addEventListener('click', () => {
+        const model = pullModelName.value.trim() || 'unknown-model';
+        const connection = pullConnection.value;
+        const phases = ['Pulling manifest', 'Downloading layers', 'Verifying digest', 'Writing manifest', 'Finalizing'];
+        let progress = 0;
+        let phaseIndex = 0;
+
+        pullFlow.classList.remove('open');
+        if (progressTimer) clearInterval(progressTimer);
+
+        activePullLabel.textContent = `Pulling ${model}`;
+        activePullPhase.textContent = `${phases[0]} on ${connection}`;
+        activePullPercent.textContent = '0%';
+        progressBar.style.width = '0%';
+        addRecent(`Pull started: ${model} on ${connection}`);
+
+        progressTimer = setInterval(() => {
+          progress += Math.floor(Math.random() * 14) + 8;
+          if (progress > 100) progress = 100;
+          if (phaseIndex < phases.length - 1 && progress >= (phaseIndex + 1) * 20) phaseIndex += 1;
+
+          activePullLabel.textContent = `${phases[phaseIndex]}: ${model}`;
+          activePullPhase.textContent = `Connection: ${connection}`;
+          activePullPercent.textContent = `${progress}%`;
+          progressBar.style.width = `${progress}%`;
+
+          if (progress >= 100) {
+            clearInterval(progressTimer);
+            progressTimer = null;
+            activePullLabel.textContent = `${model} pull complete`;
+            activePullPhase.textContent = `Completed on ${connection}`;
+            addRecent(`Pull completed: ${model}`);
+          }
+        }, 700);
+      });
+    </script>
+  </body>
+</html>

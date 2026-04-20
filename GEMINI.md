@@ -63,3 +63,16 @@ The project uses **TypeScript** for type safety and **Vitest** for unit and comp
 ### Styling
 - Adhere to the existing CSS variables and layout patterns defined in `src/styles.css`.
 - Use functional class names and avoid inline styles where possible.
+
+## UI/UX Standards
+- Adhere to the core philosophy of "Tools, not Websites."
+- Follow the high-density and keyboard-first standards defined in `desktop-patterns.md`.
+- Reference: [Desktop UX Web App Standards Gist](https://gist.github.com/angelxmoreno/9e580cfd6f3f59f76ec635fa2c6ef09b#file-desktop-ux-web-app-standards-md)
+- **Key Principles:**
+    - **Multi-Pane Layouts:** Use persistent regions (sidebar, main, inspector) instead of page replacement.
+    - **Panel-Based Scrolling:** Body is `overflow: hidden`; panels use `overflow: auto`.
+    - **Persistent State:** Remember tabs, scroll positions, panel widths, and filters locally.
+    - **Optimistic UI:** Immediate UI updates with background sync and graceful rollback.
+    - **Non-Blocking Inspectors:** Use right-aligned drawers instead of centered modals for detail views.
+    - **Keyboard Fluency:** Implement the "Escape" stack and clear `:focus-visible` styles.
+    - **Selection as First-Class State:** Distinct from navigation; support range/additive selection.

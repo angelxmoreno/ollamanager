@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OllaManager | Precision Model Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-size: 18px; }
+        .mono-text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #060e20; }
+        ::-webkit-scrollbar-thumb { background: #2b4680; border-radius: 2px; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#00225a",
+                      "primary-container": "#004c69",
+                      "primary-fixed-dim": "#a2dcff",
+                      "surface-container": "#05183c",
+                      "tertiary-fixed-dim": "#e79400",
+                      "secondary-fixed-dim": "#c6d6ec",
+                      "surface-tint": "#7bd0ff",
+                      "surface-container-low": "#06122d",
+                      "on-error-container": "#ff9993",
+                      "on-error": "#490106",
+                      "inverse-on-surface": "#4d556b",
+                      "error": "#ee7d77",
+                      "outline-variant": "#2b4680",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-tertiary-container": "#4a2c00",
+                      "surface-container-highest": "#00225a",
+                      "tertiary-dim": "#e79400",
+                      "primary-dim": "#47c4ff",
+                      "surface-dim": "#060e20",
+                      "primary-fixed": "#c4e7ff",
+                      "on-secondary-fixed": "#324052",
+                      "surface-container-lowest": "#000000",
+                      "primary": "#7bd0ff",
+                      "surface-container-high": "#031d4b",
+                      "error-dim": "#bb5551",
+                      "secondary-fixed": "#d4e4fa",
+                      "surface": "#060e20",
+                      "on-primary": "#004560",
+                      "inverse-primary": "#00668b",
+                      "tertiary": "#ffb148",
+                      "secondary": "#909fb4",
+                      "surface-bright": "#002867",
+                      "on-tertiary": "#573500",
+                      "tertiary-container": "#f8a010",
+                      "on-secondary-fixed-variant": "#4e5d6f",
+                      "on-primary-fixed-variant": "#006286",
+                      "on-primary-container": "#97d8ff",
+                      "outline": "#5b74b1",
+                      "on-secondary-container": "#b1c0d6",
+                      "on-secondary": "#122131",
+                      "on-background": "#dee5ff",
+                      "secondary-container": "#2e3c4e",
+                      "background": "#060e20",
+                      "inverse-surface": "#faf8ff",
+                      "on-surface": "#dee5ff",
+                      "secondary-dim": "#909fb4",
+                      "error-container": "#7f2927",
+                      "tertiary-fixed": "#f8a010",
+                      "on-primary-fixed": "#00445e",
+                      "on-surface-variant": "#91aaeb",
+                      "on-tertiary-fixed-variant": "#563400"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              }
+            },
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col overflow-hidden">
+<!-- TopNavBar Implementation -->
+<header class="bg-slate-950/80 backdrop-blur-xl docked full-width top-0 border-b border-sky-400/10 shadow-[0_0_40px_rgba(56,189,248,0.05)] flex justify-between items-center w-full px-6 py-3 z-50">
+<div class="flex items-center gap-8">
+<span class="text-xl font-black tracking-widest text-sky-400">OllaManager</span>
+<div class="flex items-center bg-slate-900 px-3 py-1.5 rounded-lg border border-sky-400/5">
+<span class="material-symbols-outlined text-slate-500 mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm font-medium text-on-surface-variant w-64 placeholder-slate-600" placeholder="Search models or logs..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1">
+<button class="text-sky-400 border-b-2 border-sky-400 pb-1 font-inter tracking-tighter text-sm font-medium uppercase px-3">Pull Model</button>
+<button class="text-slate-500 hover:text-slate-300 transition-colors font-inter tracking-tighter text-sm font-medium uppercase px-3">Refresh</button>
+</div>
+<div class="flex items-center gap-2 pl-4 border-l border-sky-400/10">
+<button class="p-2 text-slate-500 hover:bg-sky-500/10 transition-all duration-150 rounded">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-sky-500/10 transition-all duration-150 rounded">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden">
+<!-- SideNavBar Implementation -->
+<aside class="bg-slate-900 flex flex-col border-r border-sky-400/5 docked left-0 h-full w-64 rounded-none z-40">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(123,208,255,0.6)]"></div>
+<h2 class="font-inter text-[11px] font-semibold tracking-widest text-on-surface-variant uppercase">CONNECTIONS</h2>
+</div>
+<p class="font-inter text-[10px] text-slate-500 mono-text uppercase tracking-wider">v1.4.2 Stable</p>
+</div>
+<nav class="flex-1 overflow-y-auto">
+<div class="bg-sky-500/10 text-sky-400 border-l-4 border-sky-500 shadow-[inset_0_0_10px_rgba(56,189,248,0.1)] py-3 px-6 flex items-center gap-3 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="dns">dns</span>
+<span class="font-inter text-[11px] font-semibold tracking-widest">Localhost</span>
+</div>
+<div class="text-slate-500 py-3 px-6 flex items-center gap-3 hover:bg-slate-800/50 cursor-pointer transition-all duration-150">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+<span class="font-inter text-[11px] font-semibold tracking-widest">Dev-Cluster</span>
+</div>
+<div class="text-slate-500 py-3 px-6 flex items-center gap-3 hover:bg-slate-800/50 cursor-pointer transition-all duration-150">
+<span class="material-symbols-outlined" data-icon="settings_input_antenna">settings_input_antenna</span>
+<span class="font-inter text-[11px] font-semibold tracking-widest">Edge-Node-01</span>
+</div>
+<div class="text-slate-500 py-3 px-6 flex items-center gap-3 hover:bg-slate-800/50 cursor-pointer transition-all duration-150">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-inter text-[11px] font-semibold tracking-widest">Archived</span>
+</div>
+</nav>
+<div class="p-4">
+<button class="w-full py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold text-[11px] tracking-widest uppercase rounded flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined" style="font-size: 16px;">add</span>
+                    Add Server
+                </button>
+</div>
+<div class="mt-auto border-t border-sky-400/5">
+<div class="text-slate-500 py-3 px-6 flex items-center gap-3 hover:bg-slate-800/50 cursor-pointer text-[10px] tracking-wider uppercase font-semibold">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                    Diagnostics
+                </div>
+<div class="text-slate-500 py-3 px-6 flex items-center gap-3 hover:bg-slate-800/50 cursor-pointer text-[10px] tracking-wider uppercase font-semibold">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+                    Version Control
+                </div>
+</div>
+</aside>
+<!-- Center Workspace: High Density Table -->
+<section class="flex-1 flex flex-col bg-surface overflow-hidden">
+<div class="flex items-center justify-between px-6 py-4 bg-surface-container-low border-b border-sky-400/5">
+<h1 class="font-inter font-bold text-lg tracking-tight text-on-surface">Installed Models</h1>
+<div class="flex items-center gap-3">
+<span class="text-[10px] mono-text text-slate-500">6 MODELS DETECTED</span>
+<div class="flex gap-1">
+<div class="w-1.5 h-1.5 bg-primary rounded-full"></div>
+<div class="w-1.5 h-1.5 bg-slate-800 rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-auto">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-bright z-10">
+<tr>
+<th class="py-2 px-6 bg-surface-bright text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-sky-400/10">Name</th>
+<th class="py-2 px-4 bg-surface-bright text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-sky-400/10">ID</th>
+<th class="py-2 px-4 bg-surface-bright text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-sky-400/10">Size</th>
+<th class="py-2 px-4 bg-surface-bright text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-sky-400/10">Format</th>
+<th class="py-2 px-6 bg-surface-bright text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-sky-400/10">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-sky-400/5">
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group bg-surface-container-lowest">
+<td class="py-3 px-6 flex items-center gap-3 relative">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<span class="font-bold text-sm text-primary">llama3.1</span>
+<span class="text-[10px] px-1.5 py-0.5 bg-primary-container/30 text-primary-fixed-dim rounded border border-primary/20">LATEST</span>
+</td>
+<td class="py-3 px-4 mono-text text-[11px] text-slate-400">8e3b2c1f90a4</td>
+<td class="py-3 px-4 mono-text text-[11px] text-on-surface-variant">4.7 GB</td>
+<td class="py-3 px-4 mono-text text-[11px] text-slate-400">GGUF (Q4_K_M)</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary scale-75" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+<span class="text-[10px] font-black uppercase text-primary tracking-widest">Running</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group bg-surface">
+<td class="py-3 px-6 flex items-center gap-3">
+<span class="font-bold text-sm text-on-surface">mistral-nemo</span>
+</td>
+<td class="py-3 px-4 mono-text text-[11px] text-slate-400">76d2e1b4c3e1</td>
+<td class="py-3 px-4 mono-text text-[11px] text-on-surface-variant">7.1 GB</td>
+<td class="py-3 px-4 mono-text text-[11px] text-slate-400">GGUF (Q4_0)</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-500 scale-75">stop</span>
+<span class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Stopped</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group bg-surface-container-lowest">
+<td class="py-3 px-6 flex items-center gap-3 relative">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-tertiary"></div>
+<span class="font-bold text-sm text-on-surface">gemma-2-9b</span>
+</td>
+<td class="py-3 px-4 mono-text text-[11px] text-slate-400">d9f4e2a188c2</td>
+<td class="py-3 px-4 mono-text text-[11px] text-on-surface-variant">5.4 GB</td>
+<td class="py-3 px-4 mono-text text-[11px] text-slate-400">GGUF (Q8_0)</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary scale-75">downloading</span>
+<span class="text-[10px] font-black uppercase text-tertiary tracking-widest">Pulling</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group bg-surface">
+<td class="py-3 px-6 flex items-center gap-3">
+<span class="font-bold text-sm text-on-surface">phi-3-mini</span>
+</td>
+<td class="py-3 px-4 mono-text text-[11px] text-slate-400">3a4f9b2c11e5</td>
+<td class="py-3 px-4 mono-text text-[11px] text-on-surface-variant">2.3 GB</td>
+<td class="py-3 px-4 mono-text text-[11px] text-slate-400">GGUF (F16)</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-500 scale-75">stop</span>
+<span class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Stopped</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group bg-surface-container-lowest">
+<td class="py-3 px-6 flex items-center gap-3 relative">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<span class="font-bold text-sm text-primary">codellama</span>
+</td>
+<td class="py-3 px-4 mono-text text-[11px] text-slate-400">c3e8a1f2b4d9</td>
+<td class="py-3 px-4 mono-text text-[11px] text-on-surface-variant">12.5 GB</td>
+<td class="py-3 px-4 mono-text text-[11px] text-slate-400">GGUF (Q4_K_S)</td>
+<td class="py-3 px-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary scale-75" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+<span class="text-[10px] font-black uppercase text-primary tracking-widest">Running</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Right Inspector: Detailed Metadata -->
+<aside class="w-80 bg-surface-container border-l border-sky-400/5 flex flex-col overflow-y-auto">
+<div class="p-6 border-b border-sky-400/5">
+<div class="flex items-center justify-between mb-4">
+<span class="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Model Inspector</span>
+<span class="material-symbols-outlined text-slate-500 cursor-pointer hover:text-white">close</span>
+</div>
+<h3 class="text-2xl font-black text-on-surface tracking-tight mb-1">llama3.1</h3>
+<p class="mono-text text-[11px] text-on-surface-variant opacity-60">ID: 8e3b2c1f90a4276d</p>
+</div>
+<div class="p-6 space-y-8">
+<div>
+<h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Architecture</h4>
+<div class="grid grid-cols-1 gap-3">
+<div class="bg-surface-container-high p-3 border-l-2 border-primary/40">
+<p class="text-[9px] text-slate-500 uppercase mb-1">Parameters</p>
+<p class="mono-text text-sm font-bold text-on-surface">8.03 Billion</p>
+</div>
+<div class="bg-surface-container-high p-3 border-l-2 border-primary/40">
+<p class="text-[9px] text-slate-500 uppercase mb-1">Context Window</p>
+<p class="mono-text text-sm font-bold text-on-surface">128k Tokens</p>
+</div>
+<div class="bg-surface-container-high p-3 border-l-2 border-primary/40">
+<p class="text-[9px] text-slate-500 uppercase mb-1">Quantization</p>
+<p class="mono-text text-sm font-bold text-on-surface">4-bit (K-Means)</p>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Actions</h4>
+<div class="flex flex-col gap-2">
+<button class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-on-surface text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 14px;">pause</span>
+                            Unload Model
+                        </button>
+<button class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-on-surface text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 14px;">content_copy</span>
+                            Copy ID
+                        </button>
+<button class="w-full py-2 bg-error-container/20 hover:bg-error-container/40 text-error text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 14px;">delete</span>
+                            Delete Permanent
+                        </button>
+</div>
+</div>
+<div class="pt-6 border-t border-sky-400/5">
+<div class="rounded p-4 bg-surface-container-lowest border border-sky-400/10">
+<img class="w-full h-24 object-cover opacity-50 mb-3 rounded-sm grayscale group-hover:grayscale-0 transition-all" data-alt="Abstract visualization of neural network pathways with neon blue lines and dark technical digital noise background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCTEGhFwE2LapECWGTQW9S68lsw9Zzz5_11PYMeV1g555M0eIx13ZF8BLIbOWxVLDHr09iX2UGdAksAokBStQ5Ov5Dkpy8pMaEW21P0z7km6siX55jbh6OdmNN3s7tDnQ3fo8WZTYIIRCzrHNGl-tcMFYC_HmfUdYUQ3vkgdz2JHcGNj32gRpe7zLyT37Tlsucqz2KzuFV0Xg7d8U48b9C7KSuFCudcemfGYuABe67-DP72rHYx5W8d7dZgAe-C3HDq2ezE5rBDj0"/>
+<p class="text-[10px] text-slate-400 leading-relaxed italic">
+                            "Meta Llama 3.1 is an auto-regressive language model that uses an optimized transformer architecture."
+                        </p>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- BottomNavBar Implementation: Pulling Progress -->
+<footer class="bg-slate-950 docked full-width bottom-0 h-12 border-t border-sky-400/10 fixed bottom-0 left-0 w-full z-50 flex justify-start items-center px-4 shadow-[0_-4px_20px_rgba(56,189,248,0.05)]">
+<div class="flex items-center gap-6 w-full max-w-4xl">
+<div class="flex items-center gap-3 min-w-[240px]">
+<span class="material-symbols-outlined text-tertiary" data-icon="downloading">downloading</span>
+<div class="flex flex-col">
+<span class="font-mono text-[10px] uppercase text-on-surface">Pulling gemma-2-9b...</span>
+<span class="font-mono text-[9px] text-slate-500 uppercase tracking-tighter">ETA: 4m 12s | 12.4 MB/s</span>
+</div>
+</div>
+<div class="flex-1 h-1 bg-surface-container-highest relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-tertiary to-tertiary-fixed w-[42%]"></div>
+</div>
+<div class="flex items-center gap-4 h-full">
+<span class="font-mono text-[10px] text-tertiary font-bold">42.0%</span>
+<div class="h-4 w-[1px] bg-sky-400/10"></div>
+<div class="flex items-center gap-2 text-slate-600 px-4 h-full cursor-pointer hover:text-slate-300">
+<span class="material-symbols-outlined" data-icon="segment" style="font-size: 16px;">segment</span>
+<span class="font-mono text-[10px] uppercase">Task Logs</span>
+</div>
+<div class="flex items-center gap-2 text-slate-600 px-4 h-full cursor-pointer hover:text-slate-300">
+<span class="material-symbols-outlined" data-icon="monitor_heart" style="font-size: 16px;">monitor_heart</span>
+<span class="font-mono text-[10px] uppercase">System Health</span>
+</div>
+</div>
+</div>
+<div class="ml-auto flex items-center gap-2 bg-primary/10 px-3 py-1 rounded border border-primary/20">
+<span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+<span class="font-mono text-[9px] text-primary uppercase font-black">Cluster Synced</span>
+</div>
+</footer>
+</body></html>
